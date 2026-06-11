@@ -3,8 +3,8 @@ import 'package:events_hub/core/routes/app_routes.dart';
 import 'package:events_hub/core/theme/AppIcons.dart';
 import 'package:events_hub/core/theme/app_colors.dart';
 import 'package:events_hub/core/theme/app_text_styles.dart';
+import 'package:events_hub/core/widgets/app_text_field.dart';
 import 'package:events_hub/core/widgets/auth_background.dart';
-import 'package:events_hub/core/widgets/auth_text_field.dart';
 import 'package:events_hub/core/widgets/social_login_button.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
@@ -38,13 +38,13 @@ class _SignInScreenState extends State<SignInScreen> {
                       Text(AppStrings.signIn, style: AppTextStyles.signInTitle),
                 ),
                 const SizedBox(height: 21),
-                const AuthTextField(
+                const AppTextField(
                   hint: AppStrings.emailHint,
                   prefixIconAsset: AppIcons.mail,
                   keyboardType: TextInputType.emailAddress,
                 ),
                 const SizedBox(height: 19),
-                const AuthTextField(
+                const AppTextField(
                   hint: AppStrings.passwordHint,
                   prefixIconAsset: AppIcons.lock,
                   suffixIconAsset: AppIcons.lock,
@@ -145,8 +145,7 @@ class _SignInScreenState extends State<SignInScreen> {
           ],
         ),
         child: ElevatedButton(
-          onPressed: () =>
-              Navigator.pushReplacementNamed(context, AppRoutes.eventsList),
+          onPressed: () => {},
           style: ElevatedButton.styleFrom(
             backgroundColor: AppColors.primary,
             foregroundColor: AppColors.textOnPrimary,
