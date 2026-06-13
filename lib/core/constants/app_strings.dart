@@ -31,6 +31,20 @@ abstract final class AppStrings {
   static const String emptyEventsDescription =
       'Lorem ipsum dolor sit amet, consectetur';
   static const String exploreEvents = 'EXPLORE EVENTS';
+
+  // Home
+  static const String currentLocation = 'Current Location';
+  static const String searchHint = 'Search...';
+  static const String filters = 'Filters';
+  static const String popularEvents = 'Popular Events';
+  static const String upcomingEventsSection = 'Upcoming Events';
+  static const String nearbyYou = 'Nearby You';
+  static const String seeAll = 'See All';
+  static const String explore = 'Explore';
+  static const String map = 'Map';
+  static const String profile = 'Profile';
+  static const String inviteFriends = 'Invite your friends';
+  static const String inviteReward = 'Get \$20 for ticket';
   static const String eventDetails = 'Event Details';
   static const String buyTicket = 'BUY TICKET';
   static const String invite = 'Invite';

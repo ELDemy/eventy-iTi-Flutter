@@ -29,4 +29,22 @@ class AppIcons {
   static const String event4 = 'assets/images/event_4.png';
   static const String event5 = 'assets/images/event_5.png';
   static const String event6 = 'assets/images/event_6.png';
+
+  // Home
+  static const String promoBanner = 'assets/images/promo_banner.png';
+  static const String filter = 'assets/images/filter.svg';
+  static const String menu = 'assets/images/menu.svg';
+  static const String notification = 'assets/images/notification.svg';
+  static const String compass = 'assets/images/compass.svg';
+  static const String navCalendar = 'assets/images/nav_calendar.svg';
+  static const String navProfile = 'assets/images/nav_profile.svg';
+  static const String navLocation = 'assets/images/nav_location.svg';
+  static const String chevronRight = 'assets/images/chevron_right.svg';
+  static const String categorySports = 'assets/images/category_sports.svg';
+  static const String categoryMusic = 'assets/images/category_music.svg';
+  static const String categoryFood = 'assets/images/category_food.svg';
+  static const String categoryArt = 'assets/images/category_art.svg';
+  static const String bookmarkOutline = 'assets/images/bookmark_outline.svg';
+  static const String bookmarkFilled = 'assets/images/bookmark_filled.svg';
+  static const String searchWhite = 'assets/images/search_white.svg';
 }

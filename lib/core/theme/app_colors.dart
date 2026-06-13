@@ -65,4 +65,21 @@ abstract final class AppColors {
   static Color get primarySurface10 => primary.withValues(alpha: 0.10);
   static Color get primarySurface12 => primary.withValues(alpha: 0.12);
   static Color get navButtonSurface => surface.withValues(alpha: 0.30);
+
+  // Home
+  static const Color headerPrimary = Color(0xFF4A43EC);
+  static const Color headerFilter = Color(0xFF5D56F3);
+  static const Color headerLocationText = Color(0xFFF4F4FE);
+  static const Color navInactive = Color(0xFF2C3550);
+  static const Color categorySports = Color(0xFFF0635A);
+  static const Color categoryMusic = Color(0xFFF59762);
+  static const Color categoryFood = Color(0xFF29D697);
+  static const Color categoryArt = Color(0xFF46CDFB);
+  static const Color homeCardShadow = Color(0x0F505588);
+  static const Color promoCyan = Color(0xFF00F8FF);
+  static const Color promoBannerBg = Color(0x2900F8FF);
+  static const Color promoSubtitle = Color(0xFF484D70);
+  static const Color categoryChipShadow = Color(0x1F2E2E4F);
+  static const Color featuredLocation = Color(0xFF2B2849);
+  static const Color dateBadge = Color(0xFFF0635A);
 }
