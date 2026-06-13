@@ -50,4 +50,16 @@ abstract final class AppColors {
   static const Color chipText = primary;
   static const Color cardShadow = Color(0x1A000000);
   static const Color emptyIconBackground = Color(0xFFEDE9FE);
+
+  // Event details
+  static const Color goingCount = Color(0xFF3F38DD);
+  static const Color organizerName = Color(0xFF0D0C26);
+  static const Color organizerRole = Color(0xFF706E8F);
+  static const Color attendeeCardSurface = Color(0xFFFEFEFF);
+  static const Color attendeeCardShadow = Color(0x1A5A5A5A);
+  static const Color navOverlay = Color(0x96000000);
+
+  static Color get primarySurface10 => primary.withValues(alpha: 0.10);
+  static Color get primarySurface12 => primary.withValues(alpha: 0.12);
+  static Color get navButtonSurface => surface.withValues(alpha: 0.30);
 }

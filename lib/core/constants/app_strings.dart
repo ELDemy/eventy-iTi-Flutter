@@ -31,8 +31,12 @@ abstract final class AppStrings {
       'When events are available, they will appear here. Check back soon!';
   static const String browseEvents = 'Browse Events';
   static const String eventDetails = 'Event Details';
-  static const String bookNow = 'Book Now';
-  static const String aboutEvent = 'About this event';
+  static const String buyTicket = 'BUY TICKET';
+  static const String invite = 'Invite';
+  static const String follow = 'Follow';
+  static const String readMore = 'Read More...';
+  static const String aboutEvent = 'About Event';
+  static const String organizer = 'Organizer';
   static const String location = 'Location';
   static const String date = 'Date';
   static const String time = 'Time';
