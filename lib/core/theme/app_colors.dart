@@ -48,8 +48,11 @@ abstract final class AppColors {
   static const Color surfaceVariant = Color(0xFFF1F3F8);
   static const Color chipBackground = Color(0xFFEDE9FE);
   static const Color chipText = primary;
-  static const Color cardShadow = Color(0x1A000000);
+  static const Color cardShadow = Color(0x0F575C8A);
   static const Color emptyIconBackground = Color(0xFFEDE9FE);
+  static const Color tabBackground = Color(0x08000000);
+  static const Color tabInactiveText = Color(0xFF9B9B9B);
+  static const Color eventCardImageFallback = Color(0xFFFFCD6C);
 
   // Event details
   static const Color goingCount = Color(0xFF3F38DD);

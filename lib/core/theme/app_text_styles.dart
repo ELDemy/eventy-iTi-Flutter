@@ -157,4 +157,54 @@ abstract final class AppTextStyles {
     color: AppColors.organizerRole,
     height: 1.0,
   );
+
+  // Events list card title
+  static const TextStyle eventCardTitle = TextStyle(
+    fontSize: 15,
+    fontWeight: FontWeight.w500,
+    color: AppColors.textPrimary,
+    height: 1.0,
+  );
+
+  static const TextStyle eventCardDate = TextStyle(
+    fontSize: 13,
+    fontWeight: FontWeight.w400,
+    color: AppColors.primary,
+    height: 1.0,
+  );
+
+  static const TextStyle eventCardLocation = TextStyle(
+    fontSize: 13,
+    fontWeight: FontWeight.w400,
+    color: AppColors.textSub,
+    height: 1.0,
+  );
+
+  static const TextStyle tabActive = TextStyle(
+    fontSize: 15,
+    fontWeight: FontWeight.w400,
+    color: AppColors.primary,
+    height: 25 / 15,
+  );
+
+  static const TextStyle tabInactive = TextStyle(
+    fontSize: 15,
+    fontWeight: FontWeight.w400,
+    color: AppColors.tabInactiveText,
+    height: 25 / 15,
+  );
+
+  static const TextStyle emptyEventsTitle = TextStyle(
+    fontSize: 24,
+    fontWeight: FontWeight.w500,
+    color: AppColors.textPrimary,
+    height: 1.0,
+  );
+
+  static const TextStyle emptyEventsDescription = TextStyle(
+    fontSize: 16,
+    fontWeight: FontWeight.w400,
+    color: AppColors.textSub,
+    height: 25 / 16,
+  );
 }

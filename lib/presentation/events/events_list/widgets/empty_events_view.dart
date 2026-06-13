@@ -1,52 +1,87 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 import 'package:events_hub/core/constants/app_strings.dart';
+import 'package:events_hub/core/theme/AppIcons.dart';
 import 'package:events_hub/core/theme/app_colors.dart';
+import 'package:events_hub/core/theme/app_text_styles.dart';
 
 class EmptyEventsView extends StatelessWidget {
-  const EmptyEventsView({super.key});
+  const EmptyEventsView({
+    super.key,
+    this.onExploreEvents,
+  });
+
+  final VoidCallback? onExploreEvents;
 
   @override
   Widget build(BuildContext context) {
-    return Center(
-      child: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 40),
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Container(
-              width: 120,
-              height: 120,
-              decoration: BoxDecoration(
-                color: AppColors.emptyIconBackground,
-                shape: BoxShape.circle,
+    return Column(
+      children: [
+        Expanded(
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              SizedBox(
+                width: 202,
+                height: 202,
+                child: Stack(
+                  alignment: Alignment.center,
+                  children: [
+                    SvgPicture.asset(AppIcons.emptyCircle, width: 202, height: 202),
+                    SvgPicture.asset(AppIcons.emptySchedule, width: 140, height: 140),
+                  ],
+                ),
               ),
-              child: const Icon(
-                Icons.event_busy_outlined,
-                size: 56,
-                color: AppColors.primary,
+              const SizedBox(height: 31),
+              Text(
+                AppStrings.noUpcomingEvent,
+                style: AppTextStyles.emptyEventsTitle,
+                textAlign: TextAlign.center,
               ),
-            ),
-            const SizedBox(height: 24),
-            Text(
-              AppStrings.emptyEventsTitle,
-              style: Theme.of(context).textTheme.titleLarge?.copyWith(
-                    fontWeight: FontWeight.bold,
-                    color: AppColors.textPrimary,
-                  ),
-              textAlign: TextAlign.center,
-            ),
-            const SizedBox(height: 12),
-            Text(
-              AppStrings.emptyEventsSubtitle,
-              style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                    color: AppColors.textSecondary,
-                    height: 1.5,
-                  ),
-              textAlign: TextAlign.center,
-            ),
-          ],
+              const SizedBox(height: 12),
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 54),
+                child: Text(
+                  AppStrings.emptyEventsDescription,
+                  style: AppTextStyles.emptyEventsDescription,
+                  textAlign: TextAlign.center,
+                ),
+              ),
+            ],
+          ),
         ),
-      ),
+        Padding(
+          padding: const EdgeInsets.fromLTRB(52, 0, 52, 32),
+          child: SizedBox(
+            height: 58,
+            width: double.infinity,
+            child: DecoratedBox(
+              decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(12),
+                boxShadow: const [
+                  BoxShadow(
+                    color: AppColors.primaryButtonShadow,
+                    offset: Offset(0, 10),
+                    blurRadius: 35,
+                  ),
+                ],
+              ),
+              child: ElevatedButton(
+                onPressed: onExploreEvents,
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: AppColors.primary,
+                  foregroundColor: AppColors.textOnPrimary,
+                  elevation: 0,
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(12),
+                  ),
+                ),
+                child: Text(AppStrings.exploreEvents, style: AppTextStyles.buttonLabel),
+              ),
+            ),
+          ),
+        ),
+      ],
     );
   }
 }

@@ -16,4 +16,17 @@ class AppIcons {
   static const String avatar2 = 'assets/images/avatar_2.png';
   static const String avatar3 = 'assets/images/avatar_3.png';
   static const String organizer = 'assets/images/organizer.png';
+
+  // Events list
+  static const String mapPin = 'assets/images/map_pin.svg';
+  static const String search = 'assets/images/search.svg';
+  static const String more = 'assets/images/more.svg';
+  static const String emptySchedule = 'assets/images/empty_schedule.svg';
+  static const String emptyCircle = 'assets/images/empty_circle.svg';
+  static const String event1 = 'assets/images/event_1.png';
+  static const String event2 = 'assets/images/event_2.png';
+  static const String event3 = 'assets/images/event_3.png';
+  static const String event4 = 'assets/images/event_4.png';
+  static const String event5 = 'assets/images/event_5.png';
+  static const String event6 = 'assets/images/event_6.png';
 }

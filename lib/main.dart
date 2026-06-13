@@ -20,7 +20,7 @@ class EventsHubApp extends StatelessWidget {
       title: AppStrings.appName,
       debugShowCheckedModeBanner: false,
       theme: AppTheme.light,
-      initialRoute: AppRoutes.eventDetails,
+      initialRoute: AppRoutes.eventsList,
       routes: {
         AppRoutes.signIn: (_) => const SignInScreen(),
         AppRoutes.signUp: (_) => const SignUpScreen(),

@@ -25,11 +25,12 @@ abstract final class AppStrings {
 
   // Events
   static const String events = 'Events';
-  static const String myEvents = 'My Events';
-  static const String emptyEventsTitle = 'No events yet';
-  static const String emptyEventsSubtitle =
-      'When events are available, they will appear here. Check back soon!';
-  static const String browseEvents = 'Browse Events';
+  static const String upcoming = 'UPCOMING';
+  static const String pastEvents = 'PAST EVENTS';
+  static const String noUpcomingEvent = 'No Upcoming Event';
+  static const String emptyEventsDescription =
+      'Lorem ipsum dolor sit amet, consectetur';
+  static const String exploreEvents = 'EXPLORE EVENTS';
   static const String eventDetails = 'Event Details';
   static const String buyTicket = 'BUY TICKET';
   static const String invite = 'Invite';

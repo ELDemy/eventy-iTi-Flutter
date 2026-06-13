@@ -1,69 +1,47 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_svg/flutter_svg.dart';
+import 'package:events_hub/core/theme/AppIcons.dart';
 import 'package:events_hub/core/theme/app_colors.dart';
+import 'package:events_hub/core/theme/app_text_styles.dart';
+import 'package:events_hub/domain/models/event.dart';
 
 class EventCard extends StatelessWidget {
   const EventCard({
     super.key,
-    required this.title,
-    required this.date,
-    required this.location,
-    required this.category,
-    this.imageUrl,
+    required this.event,
     this.onTap,
+    this.onBookmarkTap,
   });
 
-  final String title;
-  final String date;
-  final String location;
-  final String category;
-  final String? imageUrl;
+  final Event event;
   final VoidCallback? onTap;
+  final VoidCallback? onBookmarkTap;
 
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
       onTap: onTap,
       child: Container(
-        margin: const EdgeInsets.only(bottom: 16),
+        height: 106,
+        margin: const EdgeInsets.only(bottom: 12),
         decoration: BoxDecoration(
           color: AppColors.surface,
           borderRadius: BorderRadius.circular(16),
-          border: Border.all(color: AppColors.border),
           boxShadow: const [
             BoxShadow(
               color: AppColors.cardShadow,
-              blurRadius: 8,
-              offset: Offset(0, 2),
+              offset: Offset(0, 10),
+              blurRadius: 35,
             ),
           ],
         ),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
+        child: Row(
           children: [
+            const SizedBox(width: 8),
             _buildImage(),
-            Padding(
-              padding: const EdgeInsets.all(16),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  _buildCategoryChip(),
-                  const SizedBox(height: 10),
-                  Text(
-                    title,
-                    style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                          fontWeight: FontWeight.w600,
-                          color: AppColors.textPrimary,
-                        ),
-                    maxLines: 2,
-                    overflow: TextOverflow.ellipsis,
-                  ),
-                  const SizedBox(height: 12),
-                  _buildInfoRow(Icons.calendar_today_outlined, date),
-                  const SizedBox(height: 6),
-                  _buildInfoRow(Icons.location_on_outlined, location),
-                ],
-              ),
-            ),
+            const SizedBox(width: 18),
+            Expanded(child: _buildContent()),
+            const SizedBox(width: 8),
           ],
         ),
       ),
@@ -72,51 +50,69 @@ class EventCard extends StatelessWidget {
 
   Widget _buildImage() {
     return ClipRRect(
-      borderRadius: const BorderRadius.vertical(top: Radius.circular(16)),
+      borderRadius: BorderRadius.circular(10),
       child: Container(
-        height: 160,
-        width: double.infinity,
-        color: AppColors.surfaceVariant,
-        child: imageUrl != null
-            ? Image.network(imageUrl!, fit: BoxFit.cover)
-            : const Icon(Icons.image_outlined, size: 48, color: AppColors.textHint),
-      ),
-    );
-  }
-
-  Widget _buildCategoryChip() {
-    return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
-      decoration: BoxDecoration(
-        color: AppColors.chipBackground,
-        borderRadius: BorderRadius.circular(20),
-      ),
-      child: Text(
-        category,
-        style: const TextStyle(
-          fontSize: 12,
-          fontWeight: FontWeight.w600,
-          color: AppColors.chipText,
+        width: 79,
+        height: 92,
+        color: AppColors.eventCardImageFallback,
+        child: Image.asset(
+          event.imageAsset,
+          fit: BoxFit.cover,
+          errorBuilder: (_, __, ___) => const Icon(
+            Icons.image_outlined,
+            color: AppColors.textSub,
+          ),
         ),
       ),
     );
   }
 
-  Widget _buildInfoRow(IconData icon, String text) {
-    return Row(
+  Widget _buildContent() {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      mainAxisAlignment: MainAxisAlignment.center,
       children: [
-        Icon(icon, size: 16, color: AppColors.textSecondary),
-        const SizedBox(width: 8),
-        Expanded(
-          child: Text(
-            text,
-            style: const TextStyle(
-              fontSize: 13,
-              color: AppColors.textSecondary,
+        Row(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Expanded(
+              child: Text(
+                event.title,
+                style: AppTextStyles.eventCardTitle,
+                maxLines: 2,
+                overflow: TextOverflow.ellipsis,
+              ),
             ),
-            maxLines: 1,
-            overflow: TextOverflow.ellipsis,
-          ),
+            GestureDetector(
+              onTap: onBookmarkTap,
+              child: SvgPicture.asset(
+                AppIcons.bookmark,
+                width: 16,
+                height: 16,
+                colorFilter: ColorFilter.mode(
+                  event.isBookmarked ? AppColors.primary : AppColors.textSub,
+                  BlendMode.srcIn,
+                ),
+              ),
+            ),
+          ],
+        ),
+        const SizedBox(height: 6),
+        Text(event.dateTime, style: AppTextStyles.eventCardDate),
+        const SizedBox(height: 6),
+        Row(
+          children: [
+            SvgPicture.asset(AppIcons.mapPin, width: 14, height: 14),
+            const SizedBox(width: 6),
+            Expanded(
+              child: Text(
+                event.location,
+                style: AppTextStyles.eventCardLocation,
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
+              ),
+            ),
+          ],
         ),
       ],
     );
