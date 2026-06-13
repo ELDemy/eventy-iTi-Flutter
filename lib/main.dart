@@ -6,6 +6,7 @@ import 'package:events_hub/presentation/auth/sign_up/sign_up_screen.dart';
 import 'package:events_hub/presentation/events/event_details/event_details_screen.dart';
 import 'package:events_hub/presentation/events/events_list/events_list_screen.dart';
 import 'package:events_hub/presentation/home/home_screen.dart';
+import 'package:events_hub/presentation/onboarding/onboarding_screen.dart';
 import 'package:flutter/material.dart';
 
 void main() {
@@ -21,8 +22,9 @@ class EventsHubApp extends StatelessWidget {
       title: AppStrings.appName,
       debugShowCheckedModeBanner: false,
       theme: AppTheme.light,
-      initialRoute: AppRoutes.home,
+      initialRoute: AppRoutes.onboarding,
       routes: {
+        AppRoutes.onboarding: (_) => const OnboardingScreen(),
         AppRoutes.signIn: (_) => const SignInScreen(),
         AppRoutes.signUp: (_) => const SignUpScreen(),
         AppRoutes.home: (_) => const HomeScreen(),

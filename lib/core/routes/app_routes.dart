@@ -4,4 +4,5 @@ abstract final class AppRoutes {
   static const String home = '/home';
   static const String eventsList = '/events';
   static const String eventDetails = '/event-details';
+  static const String onboarding = '/onboarding';
 }
