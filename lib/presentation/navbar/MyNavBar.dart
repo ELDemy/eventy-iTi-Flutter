@@ -1,12 +1,15 @@
 import 'package:events_hub/core/constants/app_strings.dart';
+import 'package:events_hub/core/routes/app_routes.dart';
 import 'package:events_hub/core/theme/AppIcons.dart';
 import 'package:events_hub/core/theme/app_text_styles.dart';
 import 'package:events_hub/presentation/add/add_screen.dart';
 import 'package:events_hub/presentation/events/events_list/events_list_screen.dart';
 import 'package:events_hub/presentation/home/home_screen.dart';
 import 'package:events_hub/presentation/map/map_screen.dart';
+import 'package:events_hub/presentation/navbar/app_drawer.dart';
 import 'package:events_hub/presentation/profile/profile_screen.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_advanced_drawer/flutter_advanced_drawer.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:persistent_bottom_nav_bar/persistent_bottom_nav_bar.dart';
 
@@ -21,6 +24,7 @@ class MyNavBar extends StatefulWidget {
 
 class _MyNavBarState extends State<MyNavBar> {
   late PersistentTabController _tabController;
+  final AdvancedDrawerController _drawerController = AdvancedDrawerController();
 
   @override
   void initState() {
@@ -34,64 +38,97 @@ class _MyNavBarState extends State<MyNavBar> {
     super.dispose();
   }
 
+  void _toggleDrawer() {
+    _drawerController.value.visible
+        ? _drawerController.hideDrawer()
+        : _drawerController.showDrawer();
+  }
+
   @override
   Widget build(BuildContext context) {
-    return PersistentTabView(
-      context,
-      controller: _tabController,
-      navBarStyle: NavBarStyle.style15,
-      backgroundColor: AppColors.surface,
-      navBarHeight: 76,
-      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 0),
-      decoration: NavBarDecoration(
-        boxShadow: [
-          BoxShadow(
-            color: AppColors.textPrimary.withValues(alpha: 0.08),
-            offset: const Offset(0, -4),
-            blurRadius: 20,
-            spreadRadius: 0,
+    return AdvancedDrawer(
+      backdropColor: Colors.black.withValues(alpha: 0.2),
+      controller: _drawerController,
+      animationCurve: Curves.easeInOut,
+      animationDuration: const Duration(milliseconds: 300),
+      animateChildDecoration: true,
+      rtlOpening: false,
+      childDecoration: const BoxDecoration(
+        borderRadius: BorderRadius.zero,
+      ),
+      drawer: AppDrawer(
+        onClose: _drawerController.hideDrawer,
+        onProfileTap: () {
+          _tabController.index = 4;
+          setState(() {});
+        },
+        onMassageTap: () {},
+        onCalendarTap: () {},
+        onBookmarkTap: () {},
+        onContactUsTap: () {},
+        onSettingsTap: () {},
+        onHelpTap: () {},
+        onSignOutTap: () {
+          AppNavigator.goToSignIn(context);
+        },
+      ),
+      child: PersistentTabView(
+        context,
+        controller: _tabController,
+        navBarStyle: NavBarStyle.style15,
+        backgroundColor: AppColors.surface,
+        navBarHeight: 76,
+        padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 0),
+        decoration: NavBarDecoration(
+          boxShadow: [
+            BoxShadow(
+              color: AppColors.textPrimary.withValues(alpha: 0.08),
+              offset: const Offset(0, -4),
+              blurRadius: 20,
+              spreadRadius: 0,
+            ),
+          ],
+          border: Border(
+            top: BorderSide(
+              color: AppColors.textPrimary.withValues(alpha: 0.06),
+              width: 0.5,
+            ),
+          ),
+        ),
+        onItemSelected: (index) {
+          setState(() {});
+        },
+        items: [
+          _buildNavItem(
+            icon: AppIcons.compass,
+            title: AppStrings.explore,
+            index: 0,
+          ),
+          _buildNavItem(
+            icon: AppIcons.navCalendar,
+            title: AppStrings.events,
+            index: 1,
+          ),
+          _buildFabItem(),
+          _buildNavItem(
+            icon: AppIcons.location,
+            title: AppStrings.map,
+            index: 3,
+          ),
+          _buildNavItem(
+            icon: AppIcons.navProfile,
+            title: AppStrings.profile,
+            index: 4,
           ),
         ],
-        border: Border(
-          top: BorderSide(
-            color: AppColors.textPrimary.withValues(alpha: 0.06),
-            width: 0.5,
-          ),
-        ),
+        screens: [
+          HomeScreen(onMenuTap: _toggleDrawer),
+          const EventsListScreen(),
+          const AddScreen(),
+          const MapScreen(),
+          const ProfileScreen(),
+        ],
       ),
-      onItemSelected: (index) {
-        setState(() {});
-      },
-      items: [
-        _buildNavItem(
-          icon: AppIcons.compass,
-          title: AppStrings.explore,
-          index: 0,
-        ),
-        _buildNavItem(
-          icon: AppIcons.navCalendar,
-          title: AppStrings.events,
-          index: 1,
-        ),
-        _buildFabItem(),
-        _buildNavItem(
-          icon: AppIcons.location,
-          title: AppStrings.map,
-          index: 3,
-        ),
-        _buildNavItem(
-          icon: AppIcons.navProfile,
-          title: AppStrings.profile,
-          index: 4,
-        ),
-      ],
-      screens: const [
-        HomeScreen(),
-        EventsListScreen(),
-        AddScreen(),
-        MapScreen(),
-        ProfileScreen(),
-      ],
     );
   }
 

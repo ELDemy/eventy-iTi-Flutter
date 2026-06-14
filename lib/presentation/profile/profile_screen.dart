@@ -17,7 +17,7 @@ class ProfileScreen extends StatelessWidget {
           length: 3,
           child: Column(
             children: [
-              _buildTopBar(context),
+              // _buildTopBar(context),
               const SizedBox(height: 12),
               _buildProfileHeader(),
               const SizedBox(height: 8),
@@ -103,14 +103,16 @@ class ProfileScreen extends StatelessWidget {
           Expanded(
             child: ElevatedButton.icon(
               onPressed: () {},
-              icon: const Icon(Icons.person_add_alt_1, color: AppColors.textOnPrimary),
+              icon: const Icon(Icons.person_add_alt_1,
+                  color: AppColors.textOnPrimary),
               label: const Text('Follow', style: AppTextStyles.buttonLabel),
               style: ElevatedButton.styleFrom(
                 backgroundColor: AppColors.primary,
                 elevation: 6,
                 shadowColor: AppColors.primaryButtonShadow,
                 padding: const EdgeInsets.symmetric(vertical: 14),
-                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(12)),
               ),
             ),
           ),
@@ -118,12 +120,15 @@ class ProfileScreen extends StatelessWidget {
           Expanded(
             child: OutlinedButton.icon(
               onPressed: () {},
-              icon: const Icon(Icons.chat_bubble_outline, color: AppColors.primary),
-              label: const Text('Massages', style: TextStyle(color: AppColors.primary)),
+              icon: const Icon(Icons.chat_bubble_outline,
+                  color: AppColors.primary),
+              label: const Text('Massages',
+                  style: TextStyle(color: AppColors.primary)),
               style: OutlinedButton.styleFrom(
                 side: const BorderSide(color: AppColors.primary),
                 padding: const EdgeInsets.symmetric(vertical: 14),
-                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(12)),
               ),
             ),
           ),

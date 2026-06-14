@@ -38,6 +38,7 @@ dependencies:
   flutter_bloc: ^9.1.1
   equatable: ^2.0.7
   persistent_bottom_nav_bar: ^6.2.1
+  flutter_advanced_drawer: ^1.5.0
 
 dev_dependencies:
   flutter_test:

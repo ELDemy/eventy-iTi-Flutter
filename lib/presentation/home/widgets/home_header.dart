@@ -15,11 +15,13 @@ class HomeHeader extends StatelessWidget {
     required this.location,
     required this.selectedCategory,
     required this.onCategorySelected,
+    required this.onMenuTap,
   });
 
   final String location;
   final EventCategory selectedCategory;
   final ValueChanged<EventCategory> onCategorySelected;
+  final VoidCallback onMenuTap;
 
   @override
   Widget build(BuildContext context) {
@@ -52,7 +54,14 @@ class HomeHeader extends StatelessWidget {
   Widget _buildTopRow() {
     return Row(
       children: [
-        SvgPicture.asset(AppIcons.menu, width: 20, height: 20),
+        InkWell(
+          onTap: onMenuTap,
+          borderRadius: BorderRadius.circular(12),
+          child: Padding(
+            padding: const EdgeInsets.all(6),
+            child: SvgPicture.asset(AppIcons.menu, width: 20, height: 20),
+          ),
+        ),
         Expanded(child: _buildLocation()),
         _buildNotification(),
       ],

@@ -12,7 +12,12 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 class HomeScreen extends StatelessWidget {
-  const HomeScreen({super.key});
+  const HomeScreen({
+    super.key,
+    this.onMenuTap,
+  });
+
+  final VoidCallback? onMenuTap;
 
   @override
   Widget build(BuildContext context) {
@@ -20,8 +25,10 @@ class HomeScreen extends StatelessWidget {
       create: (_) => HomeCubit(),
       child: Builder(builder: (context) {
         return _HomeView(
-            cubit: context.read<HomeCubit>(),
-            state: context.watch<HomeCubit>().state);
+          cubit: context.read<HomeCubit>(),
+          state: context.watch<HomeCubit>().state,
+          onMenuTap: onMenuTap,
+        );
       }),
     );
   }
@@ -30,8 +37,13 @@ class HomeScreen extends StatelessWidget {
 class _HomeView extends StatelessWidget {
   final HomeState state;
   final HomeCubit cubit;
+  final VoidCallback? onMenuTap;
 
-  const _HomeView({required this.state, required this.cubit});
+  const _HomeView({
+    required this.state,
+    required this.cubit,
+    this.onMenuTap,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -43,6 +55,7 @@ class _HomeView extends StatelessWidget {
             location: state.location,
             selectedCategory: state.selectedCategory,
             onCategorySelected: cubit.selectCategory,
+            onMenuTap: onMenuTap ?? () {},
           ),
           Expanded(
             child: state.isLoading
