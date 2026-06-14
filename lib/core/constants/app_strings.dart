@@ -1,12 +1,12 @@
 abstract final class AppStrings {
-  static const String appName = 'EventHub';
+  static const String appName = 'Eventy';
 
   // Auth
   static const String signIn = 'Sign in';
   static const String signInButton = 'SIGN IN';
   static const String signUp = 'Sign up';
   static const String signUpTitle = 'Create account';
-  static const String signUpSubtitle = 'Join EventHub and never miss an event';
+  static const String signUpSubtitle = 'Join Eventy and never miss an event';
   static const String email = 'Email';
   static const String password = 'Password';
   static const String confirmPassword = 'Confirm Password';

@@ -6,8 +6,8 @@ import 'package:events_hub/core/theme/app_text_styles.dart';
 import 'package:events_hub/core/widgets/app_text_field.dart';
 import 'package:events_hub/core/widgets/auth_background.dart';
 import 'package:events_hub/core/widgets/social_login_button.dart';
+import 'package:events_hub/presentation/auth/components/TopLogo.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_svg/flutter_svg.dart';
 
 class SignInScreen extends StatefulWidget {
   const SignInScreen({super.key});
@@ -23,14 +23,14 @@ class _SignInScreenState extends State<SignInScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: AppColors.background,
-      body: AuthBackground(
+      body: ColoredBackground(
         child: SafeArea(
           child: SingleChildScrollView(
             padding: const EdgeInsets.symmetric(horizontal: 28),
             child: Column(
               children: [
                 const SizedBox(height: 24),
-                _buildLogo(),
+                TopLogo(),
                 const SizedBox(height: 36),
                 Align(
                   alignment: Alignment.centerLeft,
@@ -76,16 +76,6 @@ class _SignInScreenState extends State<SignInScreen> {
           ),
         ),
       ),
-    );
-  }
-
-  Widget _buildLogo() {
-    return Column(
-      children: [
-        SvgPicture.asset(AppIcons.appLogo, width: 56, height: 58),
-        const SizedBox(height: 8),
-        Text(AppStrings.appName, style: AppTextStyles.brandLogo),
-      ],
     );
   }
 
@@ -145,7 +135,9 @@ class _SignInScreenState extends State<SignInScreen> {
           ],
         ),
         child: ElevatedButton(
-          onPressed: () => {},
+          onPressed: () => {
+            Navigator.pushNamed(context, AppRoutes.home),
+          },
           style: ElevatedButton.styleFrom(
             backgroundColor: AppColors.primary,
             foregroundColor: AppColors.textOnPrimary,

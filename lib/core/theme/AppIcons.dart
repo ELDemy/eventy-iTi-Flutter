@@ -1,5 +1,12 @@
 class AppIcons {
-  static const String appLogo = 'assets/images/icon.svg';
+  static const String appLogo = 'assets/icons/app_logo.png';
+  static const String appIcon = 'assets/icons/app_icon.png';
+
+  //Onboarding
+  static const String onboarding1 = 'assets/images/onboarding/onboarding1.png';
+  static const String onboarding2 = 'assets/images/onboarding/onboarding2.png';
+  static const String onboarding3 = 'assets/images/onboarding/onboarding3.png';
+
   static const String facebook = 'assets/images/facebook.svg';
   static const String google = 'assets/images/google.svg';
   static const String hidden = 'assets/images/hidden.svg';

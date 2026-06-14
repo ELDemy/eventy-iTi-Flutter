@@ -3,8 +3,8 @@ import 'dart:ui';
 import 'package:events_hub/core/theme/app_colors.dart';
 import 'package:flutter/material.dart';
 
-class AuthBackground extends StatelessWidget {
-  const AuthBackground({super.key, required this.child});
+class ColoredBackground extends StatelessWidget {
+  const ColoredBackground({super.key, required this.child});
 
   final Widget child;
 

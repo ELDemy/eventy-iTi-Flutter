@@ -2,11 +2,9 @@ import 'package:events_hub/core/constants/app_strings.dart';
 import 'package:events_hub/core/theme/app_colors.dart';
 import 'package:events_hub/core/widgets/app_primary_button.dart';
 import 'package:events_hub/core/widgets/app_text_field.dart';
+import 'package:events_hub/presentation/auth/components/TopLogo.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_svg/svg.dart';
 
-import '../../../core/theme/AppIcons.dart';
-import '../../../core/theme/app_text_styles.dart';
 import '../../../core/widgets/auth_background.dart';
 
 class SignUpScreen extends StatelessWidget {
@@ -15,14 +13,15 @@ class SignUpScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: AuthBackground(
+      body: ColoredBackground(
         child: SafeArea(
           child: SingleChildScrollView(
             padding: const EdgeInsets.symmetric(horizontal: 24),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.center,
               children: [
-                _buildLogo(),
+                const SizedBox(height: 24),
+                TopLogo(),
                 const SizedBox(height: 16),
                 Text(
                   AppStrings.signUpTitle,
@@ -78,7 +77,7 @@ class SignUpScreen extends StatelessWidget {
                   label: AppStrings.signUp,
                   onPressed: () => Navigator.pop(context),
                 ),
-                const SizedBox(height: 24),
+                const SizedBox(height: 6),
                 Row(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
@@ -94,22 +93,11 @@ class SignUpScreen extends StatelessWidget {
                     ),
                   ],
                 ),
-                const SizedBox(height: 24),
               ],
             ),
           ),
         ),
       ),
-    );
-  }
-
-  Widget _buildLogo() {
-    return Column(
-      children: [
-        SvgPicture.asset(AppIcons.appLogo, width: 56, height: 58),
-        const SizedBox(height: 8),
-        Text(AppStrings.appName, style: AppTextStyles.brandLogo),
-      ],
     );
   }
 }
