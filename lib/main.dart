@@ -1,7 +1,8 @@
-import 'package:events_hub/core/constants/app_strings.dart';
-import 'package:events_hub/core/routes/app_routes.dart';
-import 'package:events_hub/core/theme/app_theme.dart';
 import 'package:flutter/material.dart';
+
+import 'core/constants/app_strings.dart';
+import 'core/theme/app_theme.dart';
+import 'presentation/home/home_screen.dart';
 
 void main() {
   runApp(const EventsHubApp());
@@ -16,8 +17,7 @@ class EventsHubApp extends StatelessWidget {
       title: AppStrings.appName,
       debugShowCheckedModeBanner: false,
       theme: AppTheme.light,
-      initialRoute: AppRoutes.onboarding,
-      routes: AppRoutes.buildRoutes,
+      home: const HomeScreen(),
     );
   }
 }

@@ -1,9 +1,9 @@
-import 'package:flutter/material.dart';
-import 'package:flutter_svg/flutter_svg.dart';
 import 'package:events_hub/core/theme/AppIcons.dart';
 import 'package:events_hub/core/theme/app_colors.dart';
 import 'package:events_hub/core/theme/app_text_styles.dart';
 import 'package:events_hub/domain/models/event.dart';
+import 'package:flutter/material.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 
 class FeaturedEventCard extends StatelessWidget {
   const FeaturedEventCard({
@@ -110,17 +110,14 @@ class FeaturedEventCard extends StatelessWidget {
                     AppIcons.mapPin,
                     width: 16,
                     height: 16,
-                    colorFilter: ColorFilter.mode(
-                      AppColors.featuredLocation.withValues(alpha: 0.5),
-                      BlendMode.srcIn,
-                    ),
                   ),
                   const SizedBox(width: 6),
                   Expanded(
                     child: Text(
                       event.location,
                       style: AppTextStyles.featuredCardLocation.copyWith(
-                        color: AppColors.featuredLocation.withValues(alpha: 0.5),
+                        color:
+                            AppColors.featuredLocation.withValues(alpha: 0.5),
                       ),
                       maxLines: 1,
                       overflow: TextOverflow.ellipsis,

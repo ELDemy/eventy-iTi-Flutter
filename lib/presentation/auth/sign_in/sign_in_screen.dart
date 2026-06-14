@@ -135,9 +135,7 @@ class _SignInScreenState extends State<SignInScreen> {
           ],
         ),
         child: ElevatedButton(
-          onPressed: () => {
-            Navigator.pushNamed(context, AppRoutes.home),
-          },
+          onPressed: () => {AppNavigator.goToHome(context)},
           style: ElevatedButton.styleFrom(
             backgroundColor: AppColors.primary,
             foregroundColor: AppColors.textOnPrimary,
@@ -173,7 +171,7 @@ class _SignInScreenState extends State<SignInScreen> {
 
   Widget _buildSignUpFooter(BuildContext context) {
     return GestureDetector(
-      onTap: () => Navigator.pushNamed(context, AppRoutes.signUp),
+      onTap: () => AppNavigator.goToSignUp(context),
       child: RichText(
         text: TextSpan(
           style: AppTextStyles.body2,

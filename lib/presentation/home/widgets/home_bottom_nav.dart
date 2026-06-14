@@ -1,10 +1,10 @@
-import 'package:flutter/material.dart';
-import 'package:flutter_svg/flutter_svg.dart';
 import 'package:events_hub/core/constants/app_strings.dart';
 import 'package:events_hub/core/theme/AppIcons.dart';
 import 'package:events_hub/core/theme/app_colors.dart';
 import 'package:events_hub/core/theme/app_text_styles.dart';
 import 'package:events_hub/presentation/home/cubit/home_state.dart';
+import 'package:flutter/material.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 
 class HomeBottomNav extends StatelessWidget {
   const HomeBottomNav({
@@ -56,7 +56,7 @@ class HomeBottomNav extends StatelessWidget {
                   const Expanded(child: SizedBox()),
                   _NavItem(
                     label: AppStrings.map,
-                    iconAsset: AppIcons.navLocation,
+                    iconAsset: AppIcons.mapPin,
                     isActive: selectedTab == HomeNavTab.map,
                     onTap: () => onTabSelected(HomeNavTab.map),
                   ),
@@ -131,9 +131,8 @@ class _NavItem extends StatelessWidget {
               opacity: opacity,
               child: SvgPicture.asset(
                 iconAsset,
-                width: 23,
-                height: 23,
-                colorFilter: ColorFilter.mode(color, BlendMode.srcIn),
+                width: 24,
+                height: 24,
               ),
             ),
             const SizedBox(height: 4),

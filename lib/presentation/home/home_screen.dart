@@ -1,5 +1,3 @@
-import 'package:flutter/material.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:events_hub/core/constants/app_strings.dart';
 import 'package:events_hub/core/routes/app_routes.dart';
 import 'package:events_hub/core/theme/app_colors.dart';
@@ -11,6 +9,8 @@ import 'package:events_hub/presentation/home/widgets/home_header.dart';
 import 'package:events_hub/presentation/home/widgets/home_promo_banner.dart';
 import 'package:events_hub/presentation/home/widgets/home_section_header.dart';
 import 'package:events_hub/presentation/home/widgets/nearby_event_card.dart';
+import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 
 class HomeScreen extends StatelessWidget {
   const HomeScreen({super.key});
@@ -34,7 +34,7 @@ class _HomeView extends StatelessWidget {
           previous.selectedNavTab != current.selectedNavTab,
       listener: (context, state) {
         if (state.selectedNavTab == HomeNavTab.events) {
-          Navigator.pushNamed(context, AppRoutes.eventsList);
+          AppNavigator.goToEventsList(context);
           context.read<HomeCubit>().selectNavTab(HomeNavTab.explore);
         }
       },
@@ -61,6 +61,8 @@ class _HomeView extends StatelessWidget {
                           children: [
                             HomeSectionHeader(
                               title: AppStrings.upcomingEventsSection,
+                              onSeeAllTap: () =>
+                                  AppNavigator.goToEventsList(context),
                             ),
                             SizedBox(
                               height: 255,
@@ -74,10 +76,8 @@ class _HomeView extends StatelessWidget {
                                     event: event,
                                     onBookmarkTap: () =>
                                         cubit.toggleBookmark(event.id),
-                                    onTap: () => Navigator.pushNamed(
-                                      context,
-                                      AppRoutes.eventDetails,
-                                    ),
+                                    onTap: () => AppNavigator.goToEventDetails(
+                                        context, event),
                                   );
                                 },
                               ),
@@ -85,17 +85,16 @@ class _HomeView extends StatelessWidget {
                             const HomePromoBanner(),
                             HomeSectionHeader(
                               title: AppStrings.nearbyYou,
+                              onSeeAllTap: () =>
+                                  {AppNavigator.goToEventsList(context)},
                             ),
                             ...state.nearbyEvents.map(
                               (event) => NearbyEventCard(
-                                event: event,
-                                onBookmarkTap: () =>
-                                    cubit.toggleBookmark(event.id),
-                                onTap: () => Navigator.pushNamed(
-                                  context,
-                                  AppRoutes.eventDetails,
-                                ),
-                              ),
+                                  event: event,
+                                  onBookmarkTap: () =>
+                                      cubit.toggleBookmark(event.id),
+                                  onTap: () => AppNavigator.goToEventDetails(
+                                      context, event)),
                             ),
                           ],
                         ),

@@ -24,7 +24,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
         curve: Curves.easeInOut,
       );
     } else {
-      Navigator.of(context).pushReplacementNamed(AppRoutes.home);
+      AppNavigator.goToSignIn(context);
     }
   }
 
@@ -38,7 +38,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
   }
 
   void _onSkip() {
-    Navigator.of(context).pushReplacementNamed(AppRoutes.signIn);
+    AppNavigator.goToSignIn(context);
   }
 
   @override

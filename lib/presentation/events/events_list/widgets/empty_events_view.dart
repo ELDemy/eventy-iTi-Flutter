@@ -1,9 +1,9 @@
-import 'package:flutter/material.dart';
-import 'package:flutter_svg/flutter_svg.dart';
 import 'package:events_hub/core/constants/app_strings.dart';
 import 'package:events_hub/core/theme/AppIcons.dart';
 import 'package:events_hub/core/theme/app_colors.dart';
 import 'package:events_hub/core/theme/app_text_styles.dart';
+import 'package:flutter/material.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 
 class EmptyEventsView extends StatelessWidget {
   const EmptyEventsView({
@@ -27,8 +27,11 @@ class EmptyEventsView extends StatelessWidget {
                 child: Stack(
                   alignment: Alignment.center,
                   children: [
-                    SvgPicture.asset(AppIcons.emptyCircle, width: 202, height: 202),
-                    SvgPicture.asset(AppIcons.emptySchedule, width: 140, height: 140),
+                    SvgPicture.asset(
+                      AppIcons.emptySchedule,
+                      width: 140,
+                      height: 140,
+                    ),
                   ],
                 ),
               ),
@@ -76,7 +79,8 @@ class EmptyEventsView extends StatelessWidget {
                     borderRadius: BorderRadius.circular(12),
                   ),
                 ),
-                child: Text(AppStrings.exploreEvents, style: AppTextStyles.buttonLabel),
+                child: Text(AppStrings.exploreEvents,
+                    style: AppTextStyles.buttonLabel),
               ),
             ),
           ),

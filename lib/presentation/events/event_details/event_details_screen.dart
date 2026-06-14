@@ -1,29 +1,19 @@
-import 'package:flutter/material.dart';
-import 'package:flutter_svg/flutter_svg.dart';
 import 'package:events_hub/core/constants/app_strings.dart';
+import 'package:events_hub/core/routes/app_routes.dart';
 import 'package:events_hub/core/theme/AppIcons.dart';
 import 'package:events_hub/core/theme/app_colors.dart';
 import 'package:events_hub/core/theme/app_text_styles.dart';
+import 'package:events_hub/domain/models/event.dart';
 import 'package:events_hub/presentation/events/event_details/widgets/attendees_floating_card.dart';
 import 'package:events_hub/presentation/events/event_details/widgets/event_info_row.dart';
 import 'package:events_hub/presentation/events/event_details/widgets/organizer_row.dart';
+import 'package:flutter/material.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 
 class EventDetailsScreen extends StatelessWidget {
-  const EventDetailsScreen({super.key});
+  const EventDetailsScreen({super.key, required this.event});
 
-  // TODO: replace with API data
-  static const Map<String, String> _mockEvent = {
-    'title': 'International Band Music Concert',
-    'date': '14 December, 2021',
-    'time': 'Tuesday, 4:00PM - 9:00PM',
-    'locationName': 'Gala Convention Center',
-    'locationAddress': '36 Guild Street London, UK',
-    'goingCount': '+20 Going',
-    'organizerName': 'Ashfak Sayem',
-    'description':
-        'Enjoy your favorite dishe and a lovely your friends and family and have a great time. Food from local food trucks will be available for purchase. ',
-    'ticketPrice': '\$120',
-  };
+  final Event event;
 
   static const double _heroHeight = 244;
 
@@ -80,7 +70,7 @@ class EventDetailsScreen extends StatelessWidget {
             right: 0,
             top: _heroHeight - 30,
             child: AttendeesFloatingCard(
-              goingLabel: _mockEvent['goingCount']!,
+              goingLabel: event.goingCount ?? "0",
               onInvite: () {},
             ),
           ),
@@ -102,7 +92,7 @@ class EventDetailsScreen extends StatelessWidget {
             children: [
               _NavIconButton(
                 iconAsset: AppIcons.back,
-                onTap: () => Navigator.pop(context),
+                onTap: () => AppNavigator.goBack(context),
               ),
               Expanded(
                 child: Text(
@@ -112,7 +102,7 @@ class EventDetailsScreen extends StatelessWidget {
                 ),
               ),
               _NavIconButton(
-                iconAsset: AppIcons.bookmark,
+                iconAsset: AppIcons.bookmarkOutline,
                 onTap: () {},
               ),
             ],
@@ -128,23 +118,23 @@ class EventDetailsScreen extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text(_mockEvent['title']!, style: AppTextStyles.eventTitle),
+          Text(event.title, style: AppTextStyles.eventTitle),
           const SizedBox(height: 24),
           EventInfoRow(
             iconAsset: AppIcons.calendar,
-            title: _mockEvent['date']!,
-            subtitle: _mockEvent['time']!,
+            title: event.dateTime,
+            subtitle: event.dateTime,
           ),
           const SizedBox(height: 16),
           EventInfoRow(
             iconAsset: AppIcons.location,
             iconBackgroundOpacity: 0.12,
-            title: _mockEvent['locationName']!,
-            subtitle: _mockEvent['locationAddress']!,
+            title: event.location,
+            subtitle: event.location,
           ),
           const SizedBox(height: 24),
           OrganizerRow(
-            name: _mockEvent['organizerName']!,
+            name: "organizerName",
             role: AppStrings.organizer,
             onFollow: () {},
           ),
@@ -155,8 +145,9 @@ class EventDetailsScreen extends StatelessWidget {
             text: TextSpan(
               style: AppTextStyles.aboutBody,
               children: [
-                TextSpan(text: _mockEvent['description']),
-                TextSpan(text: AppStrings.readMore, style: AppTextStyles.readMore),
+                TextSpan(text: event.category.label),
+                TextSpan(
+                    text: AppStrings.readMore, style: AppTextStyles.readMore),
               ],
             ),
           ),
@@ -213,7 +204,7 @@ class EventDetailsScreen extends StatelessWidget {
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
                       Text(
-                        '${AppStrings.buyTicket} ${_mockEvent['ticketPrice']}',
+                        '${AppStrings.buyTicket} "30\$"',
                         style: AppTextStyles.buttonLabel,
                       ),
                       const Spacer(),
@@ -260,7 +251,13 @@ class _NavIconButton extends StatelessWidget {
           borderRadius: BorderRadius.circular(10),
         ),
         child: Center(
-          child: SvgPicture.asset(iconAsset, width: 22, height: 22),
+          child: SvgPicture.asset(
+            iconAsset,
+            width: 22,
+            height: 22,
+            colorFilter:
+                ColorFilter.mode(AppColors.textOnPrimary, BlendMode.srcIn),
+          ),
         ),
       ),
     );

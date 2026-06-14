@@ -1,12 +1,13 @@
-import 'package:flutter/material.dart';
-import 'package:flutter_svg/flutter_svg.dart';
 import 'package:events_hub/core/constants/app_strings.dart';
+import 'package:events_hub/core/routes/app_routes.dart';
 import 'package:events_hub/core/theme/AppIcons.dart';
 import 'package:events_hub/core/theme/app_colors.dart';
 import 'package:events_hub/core/theme/app_text_styles.dart';
 import 'package:events_hub/domain/models/event_category.dart';
 import 'package:events_hub/domain/models/event_category_style.dart';
 import 'package:events_hub/presentation/home/widgets/category_chip.dart';
+import 'package:flutter/material.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 
 class HomeHeader extends StatelessWidget {
   const HomeHeader({
@@ -33,12 +34,12 @@ class HomeHeader extends StatelessWidget {
       child: SafeArea(
         bottom: false,
         child: Padding(
-          padding: const EdgeInsets.fromLTRB(24, 8, 24, 20),
+          padding: const EdgeInsets.fromLTRB(24, 16, 24, 20),
           child: Column(
             children: [
               _buildTopRow(),
               const SizedBox(height: 20),
-              _buildSearchRow(),
+              _buildSearchRow(context),
               const SizedBox(height: 18),
               _buildCategoryRow(),
             ],
@@ -51,7 +52,7 @@ class HomeHeader extends StatelessWidget {
   Widget _buildTopRow() {
     return Row(
       children: [
-        SvgPicture.asset(AppIcons.menu, width: 24, height: 24),
+        SvgPicture.asset(AppIcons.menu, width: 20, height: 20),
         Expanded(child: _buildLocation()),
         _buildNotification(),
       ],
@@ -97,10 +98,9 @@ class HomeHeader extends StatelessWidget {
             color: AppColors.surface.withValues(alpha: 0.15),
           ),
           alignment: Alignment.center,
-          child: SvgPicture.asset(
-            AppIcons.notification,
-            width: 18,
-            height: 18,
+          child: Icon(
+            Icons.notifications_none,
+            color: AppColors.textOnPrimary.withValues(alpha: 0.7),
           ),
         ),
         Positioned(
@@ -119,49 +119,54 @@ class HomeHeader extends StatelessWidget {
     );
   }
 
-  Widget _buildSearchRow() {
-    return Row(
-      children: [
-        Expanded(
-          child: Container(
-            height: 32,
-            alignment: Alignment.centerLeft,
-            child: Row(
-              children: [
-                SvgPicture.asset(AppIcons.searchWhite, width: 24, height: 24),
-                Container(
-                  width: 1,
-                  height: 20,
-                  margin: const EdgeInsets.symmetric(horizontal: 10),
-                  color: AppColors.textOnPrimary.withValues(alpha: 0.3),
-                ),
-                Text(
-                  AppStrings.searchHint,
-                  style: AppTextStyles.homeSearchHint.copyWith(
+  Widget _buildSearchRow(BuildContext context) {
+    return GestureDetector(
+      onTap: () {
+        AppNavigator.goToSearchEvents(context);
+      },
+      child: Row(
+        children: [
+          Expanded(
+            child: Container(
+              height: 32,
+              alignment: Alignment.centerLeft,
+              child: Row(
+                children: [
+                  SvgPicture.asset(AppIcons.searchWhite, width: 24, height: 24),
+                  Container(
+                    width: 1,
+                    height: 20,
+                    margin: const EdgeInsets.symmetric(horizontal: 10),
                     color: AppColors.textOnPrimary.withValues(alpha: 0.3),
                   ),
-                ),
+                  Text(
+                    AppStrings.searchHint,
+                    style: AppTextStyles.homeSearchHint.copyWith(
+                      color: AppColors.textOnPrimary.withValues(alpha: 0.3),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ),
+          Container(
+            height: 32,
+            padding: const EdgeInsets.symmetric(horizontal: 8),
+            decoration: BoxDecoration(
+              color: AppColors.headerFilter,
+              borderRadius: BorderRadius.circular(50),
+            ),
+            child: Row(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                SvgPicture.asset(AppIcons.filter, width: 24, height: 24),
+                const SizedBox(width: 4),
+                Text(AppStrings.filters, style: AppTextStyles.homeFilterLabel),
               ],
             ),
           ),
-        ),
-        Container(
-          height: 32,
-          padding: const EdgeInsets.symmetric(horizontal: 8),
-          decoration: BoxDecoration(
-            color: AppColors.headerFilter,
-            borderRadius: BorderRadius.circular(50),
-          ),
-          child: Row(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              SvgPicture.asset(AppIcons.filter, width: 24, height: 24),
-              const SizedBox(width: 4),
-              Text(AppStrings.filters, style: AppTextStyles.homeFilterLabel),
-            ],
-          ),
-        ),
-      ],
+        ],
+      ),
     );
   }
 

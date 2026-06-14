@@ -1,9 +1,9 @@
-import 'package:flutter/material.dart';
-import 'package:flutter_svg/flutter_svg.dart';
 import 'package:events_hub/core/theme/AppIcons.dart';
 import 'package:events_hub/core/theme/app_colors.dart';
 import 'package:events_hub/core/theme/app_text_styles.dart';
 import 'package:events_hub/domain/models/event.dart';
+import 'package:flutter/material.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 
 class NearbyEventCard extends StatelessWidget {
   const NearbyEventCard({
@@ -111,14 +111,9 @@ class NearbyEventCard extends StatelessWidget {
     return GestureDetector(
       onTap: onBookmarkTap,
       child: SvgPicture.asset(
-        event.isBookmarked
-            ? AppIcons.bookmarkFilled
-            : AppIcons.bookmarkOutline,
+        event.isBookmarked ? AppIcons.bookmarkFilled : AppIcons.bookmarkOutline,
         width: 16,
         height: 16,
-        colorFilter: event.isBookmarked
-            ? const ColorFilter.mode(AppColors.primary, BlendMode.srcIn)
-            : null,
       ),
     );
   }

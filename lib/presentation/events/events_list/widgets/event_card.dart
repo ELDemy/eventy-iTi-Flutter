@@ -1,9 +1,9 @@
-import 'package:flutter/material.dart';
-import 'package:flutter_svg/flutter_svg.dart';
 import 'package:events_hub/core/theme/AppIcons.dart';
 import 'package:events_hub/core/theme/app_colors.dart';
 import 'package:events_hub/core/theme/app_text_styles.dart';
 import 'package:events_hub/domain/models/event.dart';
+import 'package:flutter/material.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 
 class EventCard extends StatelessWidget {
   const EventCard({
@@ -86,7 +86,7 @@ class EventCard extends StatelessWidget {
             GestureDetector(
               onTap: onBookmarkTap,
               child: SvgPicture.asset(
-                AppIcons.bookmark,
+                AppIcons.bookmarkOutline,
                 width: 16,
                 height: 16,
                 colorFilter: ColorFilter.mode(

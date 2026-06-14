@@ -29,7 +29,6 @@ class AppIcons {
   static const String search = 'assets/images/search.svg';
   static const String more = 'assets/images/more.svg';
   static const String emptySchedule = 'assets/images/empty_schedule.svg';
-  static const String emptyCircle = 'assets/images/empty_circle.svg';
   static const String event1 = 'assets/images/event_1.png';
   static const String event2 = 'assets/images/event_2.png';
   static const String event3 = 'assets/images/event_3.png';
