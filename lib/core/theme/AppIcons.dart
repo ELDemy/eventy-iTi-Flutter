@@ -25,6 +25,7 @@ class AppIcons {
   static const String organizer = 'assets/images/organizer.png';
 
   // Events list
+  static const String addBox = 'assets/images/add.svg';
   static const String mapPin = 'assets/images/map_pin.svg';
   static const String search = 'assets/images/search.svg';
   static const String more = 'assets/images/more.svg';

@@ -6,9 +6,14 @@ import 'empty_events_view.dart';
 import 'event_card.dart';
 
 class EventsList extends StatelessWidget {
-  const EventsList({super.key, required this.events});
+  const EventsList({
+    super.key,
+    required this.events,
+    this.onEventTap,
+  });
 
   final List<Event> events;
+  final Function(Event)? onEventTap;
 
   @override
   Widget build(BuildContext context) {
@@ -27,7 +32,13 @@ class EventsList extends StatelessWidget {
         final event = events[index];
         return EventCard(
           event: event,
-          onTap: () => AppNavigator.goToEventDetails(context, event),
+          onTap: () {
+            if (onEventTap != null) {
+              onEventTap!(event);
+            } else {
+              AppNavigator.goToEventDetails(context, event);
+            }
+          },
           onBookmarkTap: () {},
         );
       },

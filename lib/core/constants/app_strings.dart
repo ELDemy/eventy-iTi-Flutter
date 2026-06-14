@@ -41,6 +41,7 @@ abstract final class AppStrings {
   static const String nearbyYou = 'Nearby You';
   static const String seeAll = 'See All';
   static const String explore = 'Explore';
+  static const String add = 'add';
   static const String map = 'Map';
   static const String profile = 'Profile';
   static const String inviteFriends = 'Invite your friends';

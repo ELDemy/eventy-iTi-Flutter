@@ -4,7 +4,6 @@ import 'package:events_hub/core/theme/app_colors.dart';
 import 'package:events_hub/presentation/home/cubit/home_cubit.dart';
 import 'package:events_hub/presentation/home/cubit/home_state.dart';
 import 'package:events_hub/presentation/home/widgets/featured_event_card.dart';
-import 'package:events_hub/presentation/home/widgets/home_bottom_nav.dart';
 import 'package:events_hub/presentation/home/widgets/home_header.dart';
 import 'package:events_hub/presentation/home/widgets/home_promo_banner.dart';
 import 'package:events_hub/presentation/home/widgets/home_section_header.dart';
@@ -19,95 +18,81 @@ class HomeScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return BlocProvider(
       create: (_) => HomeCubit(),
-      child: const _HomeView(),
+      child: Builder(builder: (context) {
+        return _HomeView(
+            cubit: context.read<HomeCubit>(),
+            state: context.watch<HomeCubit>().state);
+      }),
     );
   }
 }
 
 class _HomeView extends StatelessWidget {
-  const _HomeView();
+  final HomeState state;
+  final HomeCubit cubit;
+
+  const _HomeView({required this.state, required this.cubit});
 
   @override
   Widget build(BuildContext context) {
-    return BlocConsumer<HomeCubit, HomeState>(
-      listenWhen: (previous, current) =>
-          previous.selectedNavTab != current.selectedNavTab,
-      listener: (context, state) {
-        if (state.selectedNavTab == HomeNavTab.events) {
-          AppNavigator.goToEventsList(context);
-          context.read<HomeCubit>().selectNavTab(HomeNavTab.explore);
-        }
-      },
-      builder: (context, state) {
-        final cubit = context.read<HomeCubit>();
-
-        return Scaffold(
-          backgroundColor: AppColors.background,
-          extendBody: true,
-          body: Column(
-            children: [
-              HomeHeader(
-                location: state.location,
-                selectedCategory: state.selectedCategory,
-                onCategorySelected: cubit.selectCategory,
-              ),
-              Expanded(
-                child: state.isLoading
-                    ? const Center(child: CircularProgressIndicator())
-                    : SingleChildScrollView(
-                        padding: const EdgeInsets.only(top: 16, bottom: 100),
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            HomeSectionHeader(
-                              title: AppStrings.upcomingEventsSection,
-                              onSeeAllTap: () =>
-                                  AppNavigator.goToEventsList(context),
-                            ),
-                            SizedBox(
-                              height: 255,
-                              child: ListView.builder(
-                                scrollDirection: Axis.horizontal,
-                                padding: const EdgeInsets.only(left: 24),
-                                itemCount: state.popularEvents.length,
-                                itemBuilder: (context, index) {
-                                  final event = state.popularEvents[index];
-                                  return FeaturedEventCard(
-                                    event: event,
-                                    onBookmarkTap: () =>
-                                        cubit.toggleBookmark(event.id),
-                                    onTap: () => AppNavigator.goToEventDetails(
-                                        context, event),
-                                  );
-                                },
-                              ),
-                            ),
-                            const HomePromoBanner(),
-                            HomeSectionHeader(
-                              title: AppStrings.nearbyYou,
-                              onSeeAllTap: () =>
-                                  {AppNavigator.goToEventsList(context)},
-                            ),
-                            ...state.nearbyEvents.map(
-                              (event) => NearbyEventCard(
-                                  event: event,
-                                  onBookmarkTap: () =>
-                                      cubit.toggleBookmark(event.id),
-                                  onTap: () => AppNavigator.goToEventDetails(
-                                      context, event)),
-                            ),
-                          ],
+    return Scaffold(
+      backgroundColor: AppColors.background,
+      body: Column(
+        children: [
+          HomeHeader(
+            location: state.location,
+            selectedCategory: state.selectedCategory,
+            onCategorySelected: cubit.selectCategory,
+          ),
+          Expanded(
+            child: state.isLoading
+                ? const Center(child: CircularProgressIndicator())
+                : SingleChildScrollView(
+                    padding: const EdgeInsets.only(top: 16, bottom: 100),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        HomeSectionHeader(
+                          title: AppStrings.upcomingEventsSection,
+                          onSeeAllTap: () {},
                         ),
-                      ),
-              ),
-            ],
+                        SizedBox(
+                          height: 255,
+                          child: ListView.builder(
+                            scrollDirection: Axis.horizontal,
+                            padding: const EdgeInsets.only(left: 24),
+                            itemCount: state.popularEvents.length,
+                            itemBuilder: (context, index) {
+                              final event = state.popularEvents[index];
+                              return FeaturedEventCard(
+                                event: event,
+                                onBookmarkTap: () =>
+                                    cubit.toggleBookmark(event.id),
+                                onTap: () => AppNavigator.goToEventDetails(
+                                    context, event),
+                              );
+                            },
+                          ),
+                        ),
+                        const HomePromoBanner(),
+                        HomeSectionHeader(
+                          title: AppStrings.nearbyYou,
+                          onSeeAllTap: () {},
+                        ),
+                        ...state.nearbyEvents.map(
+                          (event) => NearbyEventCard(
+                              event: event,
+                              onBookmarkTap: () =>
+                                  cubit.toggleBookmark(event.id),
+                              onTap: () => AppNavigator.goToEventDetails(
+                                  context, event)),
+                        ),
+                      ],
+                    ),
+                  ),
           ),
-          bottomNavigationBar: HomeBottomNav(
-            selectedTab: state.selectedNavTab,
-            onTabSelected: cubit.selectNavTab,
-          ),
-        );
-      },
+        ],
+      ),
     );
   }
 }
