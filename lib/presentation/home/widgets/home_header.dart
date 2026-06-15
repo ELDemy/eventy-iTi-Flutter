@@ -16,12 +16,14 @@ class HomeHeader extends StatelessWidget {
     required this.selectedCategory,
     required this.onCategorySelected,
     required this.onMenuTap,
+    this.categories = EventCategory.homeFilters,
   });
 
   final String location;
   final EventCategory selectedCategory;
   final ValueChanged<EventCategory> onCategorySelected;
   final VoidCallback onMenuTap;
+  final List<EventCategory> categories;
 
   @override
   Widget build(BuildContext context) {
@@ -184,10 +186,10 @@ class HomeHeader extends StatelessWidget {
       height: 40,
       child: ListView.separated(
         scrollDirection: Axis.horizontal,
-        itemCount: EventCategory.homeFilters.length,
+        itemCount: categories.length,
         separatorBuilder: (_, __) => const SizedBox(width: 12),
         itemBuilder: (context, index) {
-          final category = EventCategory.homeFilters[index];
+          final category = categories[index];
           return CategoryChip(
             label: category.label,
             iconAsset: category.iconAsset,

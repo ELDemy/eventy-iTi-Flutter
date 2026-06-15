@@ -1,28 +1,76 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:events_hub/core/di/events_dependencies.dart';
 import 'package:events_hub/domain/models/event.dart';
 import 'package:events_hub/domain/models/event_category.dart';
-import 'package:events_hub/domain/models/mock_home_data.dart';
+import 'package:events_hub/domain/usecases/get_categories.dart';
+import 'package:events_hub/domain/usecases/get_nearby_events.dart';
+import 'package:events_hub/domain/usecases/get_upcoming_events.dart';
 import 'package:events_hub/presentation/home/cubit/home_state.dart';
 
 class HomeCubit extends Cubit<HomeState> {
-  HomeCubit() : super(const HomeState()) {
+  HomeCubit({
+    GetUpcomingEvents? getUpcomingEvents,
+    GetNearbyEvents? getNearbyEvents,
+    GetCategories? getCategories,
+  })  : _getUpcomingEvents =
+            getUpcomingEvents ?? EventsDependencies.getUpcomingEvents,
+        _getNearbyEvents = getNearbyEvents ?? EventsDependencies.getNearbyEvents,
+        _getCategories = getCategories ?? EventsDependencies.getCategories,
+        super(const HomeState()) {
     loadHome();
   }
+
+  static const String _defaultCity = 'London';
+  static const String _defaultLatLong = '51.5074,-0.1278';
+
+  final GetUpcomingEvents _getUpcomingEvents;
+  final GetNearbyEvents _getNearbyEvents;
+  final GetCategories _getCategories;
 
   List<Event> _allPopular = [];
   List<Event> _allNearby = [];
 
   Future<void> loadHome() async {
-    emit(state.copyWith(isLoading: true));
-    _allPopular = List<Event>.from(MockHomeData.popularEvents);
-    _allNearby = List<Event>.from(MockHomeData.nearbyEvents);
+    emit(state.copyWith(isLoading: true, clearError: true));
+
+    final upcomingResult = await _getUpcomingEvents(
+      const GetUpcomingEventsParams(city: _defaultCity, size: 10),
+    );
+    final nearbyResult = await _getNearbyEvents(
+      const GetNearbyEventsParams(latLong: _defaultLatLong, size: 10),
+    );
+    final categoriesResult = await _getCategories();
+
+    final failure = upcomingResult.fold((failure) => failure, (_) => null) ??
+        nearbyResult.fold((failure) => failure, (_) => null) ??
+        categoriesResult.fold((failure) => failure, (_) => null);
+
+    if (failure != null) {
+      emit(
+        state.copyWith(
+          location: _defaultCity,
+          isLoading: false,
+          errorMessage: failure.message,
+        ),
+      );
+      return;
+    }
+
+    _allPopular = upcomingResult.fold((_) => const <Event>[], (page) => page.events);
+    _allNearby = nearbyResult.fold((_) => const <Event>[], (page) => page.events);
+    final categories = categoriesResult.fold(
+      (_) => EventCategory.homeFilters,
+      (items) => items.isEmpty ? EventCategory.homeFilters : items,
+    );
+
     emit(
       state.copyWith(
-        location: MockHomeData.location,
+        location: _defaultCity,
         popularEvents: _filterByCategory(_allPopular, state.selectedCategory),
         nearbyEvents: _filterByCategory(_allNearby, state.selectedCategory),
-        promoEvent: MockHomeData.promoEvent,
+        categories: categories,
         isLoading: false,
+        clearError: true,
       ),
     );
   }

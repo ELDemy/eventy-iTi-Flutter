@@ -1,6 +1,7 @@
 import 'package:events_hub/core/theme/AppIcons.dart';
 import 'package:events_hub/core/theme/app_colors.dart';
 import 'package:events_hub/core/theme/app_text_styles.dart';
+import 'package:events_hub/core/widgets/event_image_view.dart';
 import 'package:events_hub/domain/models/event.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
@@ -50,14 +51,7 @@ class FeaturedEventCard extends StatelessWidget {
                     child: SizedBox(
                       height: 131,
                       width: double.infinity,
-                      child: Image.asset(
-                        event.imageAsset,
-                        fit: BoxFit.cover,
-                        errorBuilder: (_, __, ___) => ColoredBox(
-                          color: AppColors.eventCardImageFallback,
-                          child: const Icon(Icons.image_outlined),
-                        ),
-                      ),
+                      child: EventImageView(event: event),
                     ),
                   ),
                 ),
@@ -133,8 +127,8 @@ class FeaturedEventCard extends StatelessWidget {
   }
 
   (String, String) _parseDateBadge(String dateTime) {
-    final beforeBullet = dateTime.split('•').first.trim();
-    final segments = beforeBullet.split(RegExp(r'\s+'));
+    final beforeTime = dateTime.split(RegExp(r'\s[-•]\s')).first.trim();
+    final segments = beforeTime.split(RegExp(r'\s+'));
     if (segments.length >= 3) {
       return (segments.last, segments[segments.length - 2]);
     }

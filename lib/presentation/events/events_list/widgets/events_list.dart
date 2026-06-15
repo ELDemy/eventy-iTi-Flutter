@@ -10,10 +10,14 @@ class EventsList extends StatelessWidget {
     super.key,
     required this.events,
     this.onEventTap,
+    this.onLoadMore,
+    this.isLoadingMore = false,
   });
 
   final List<Event> events;
   final Function(Event)? onEventTap;
+  final VoidCallback? onLoadMore;
+  final bool isLoadingMore;
 
   @override
   Widget build(BuildContext context) {
@@ -25,23 +29,39 @@ class EventsList extends StatelessWidget {
   }
 
   Widget _buildEventsList(BuildContext context, List<Event> events) {
-    return ListView.builder(
-      padding: const EdgeInsets.symmetric(horizontal: 24),
-      itemCount: events.length,
-      itemBuilder: (context, index) {
-        final event = events[index];
-        return EventCard(
-          event: event,
-          onTap: () {
-            if (onEventTap != null) {
-              onEventTap!(event);
-            } else {
-              AppNavigator.goToEventDetails(context, event);
-            }
-          },
-          onBookmarkTap: () {},
-        );
+    return NotificationListener<ScrollNotification>(
+      onNotification: (notification) {
+        final triggerOffset = notification.metrics.maxScrollExtent * 0.8;
+        if (notification.metrics.pixels >= triggerOffset) {
+          onLoadMore?.call();
+        }
+        return false;
       },
+      child: ListView.builder(
+        padding: const EdgeInsets.symmetric(horizontal: 24),
+        itemCount: events.length + (isLoadingMore ? 1 : 0),
+        itemBuilder: (context, index) {
+          if (index >= events.length) {
+            return const Padding(
+              padding: EdgeInsets.symmetric(vertical: 16),
+              child: Center(child: CircularProgressIndicator()),
+            );
+          }
+
+          final event = events[index];
+          return EventCard(
+            event: event,
+            onTap: () {
+              if (onEventTap != null) {
+                onEventTap!(event);
+              } else {
+                AppNavigator.goToEventDetails(context, event);
+              }
+            },
+            onBookmarkTap: () {},
+          );
+        },
+      ),
     );
   }
 }

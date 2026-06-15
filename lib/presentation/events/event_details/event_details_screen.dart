@@ -3,11 +3,15 @@ import 'package:events_hub/core/routes/app_routes.dart';
 import 'package:events_hub/core/theme/AppIcons.dart';
 import 'package:events_hub/core/theme/app_colors.dart';
 import 'package:events_hub/core/theme/app_text_styles.dart';
+import 'package:events_hub/core/widgets/event_image_view.dart';
 import 'package:events_hub/domain/models/event.dart';
+import 'package:events_hub/presentation/events/event_details/cubit/event_details_cubit.dart';
+import 'package:events_hub/presentation/events/event_details/cubit/event_details_state.dart';
 import 'package:events_hub/presentation/events/event_details/widgets/attendees_floating_card.dart';
 import 'package:events_hub/presentation/events/event_details/widgets/event_info_row.dart';
 import 'package:events_hub/presentation/events/event_details/widgets/organizer_row.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 
 class EventDetailsScreen extends StatelessWidget {
@@ -19,24 +23,38 @@ class EventDetailsScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: AppColors.background,
-      body: Stack(
-        children: [
-          CustomScrollView(
-            slivers: [
-              SliverToBoxAdapter(child: _buildHeroSection()),
-              SliverToBoxAdapter(child: _buildBody(context)),
-            ],
-          ),
-          _buildTopBar(context),
-          _buildBottomBar(context),
-        ],
+    return BlocProvider(
+      create: (_) => EventDetailsCubit(initialEvent: event),
+      child: BlocBuilder<EventDetailsCubit, EventDetailsState>(
+        builder: (context, state) {
+          return Scaffold(
+            backgroundColor: AppColors.background,
+            body: Stack(
+              children: [
+                CustomScrollView(
+                  slivers: [
+                    SliverToBoxAdapter(child: _buildHeroSection(state.event)),
+                    SliverToBoxAdapter(child: _buildBody(context, state)),
+                  ],
+                ),
+                _buildTopBar(context, state.event),
+                _buildBottomBar(context, state.event),
+                if (state.isLoading)
+                  const Positioned(
+                    left: 0,
+                    right: 0,
+                    top: 0,
+                    child: LinearProgressIndicator(),
+                  ),
+              ],
+            ),
+          );
+        },
       ),
     );
   }
 
-  Widget _buildHeroSection() {
+  Widget _buildHeroSection(Event event) {
     return SizedBox(
       height: _heroHeight + 48,
       child: Stack(
@@ -48,7 +66,11 @@ class EventDetailsScreen extends StatelessWidget {
             child: Stack(
               fit: StackFit.expand,
               children: [
-                Image.asset(AppIcons.eventHero, fit: BoxFit.cover),
+                EventImageView(
+                  event: event.imageUrl == null && event.imageAsset == null
+                      ? event.copyWith(imageAsset: AppIcons.eventHero)
+                      : event,
+                ),
                 const DecoratedBox(
                   decoration: BoxDecoration(
                     gradient: LinearGradient(
@@ -79,7 +101,7 @@ class EventDetailsScreen extends StatelessWidget {
     );
   }
 
-  Widget _buildTopBar(BuildContext context) {
+  Widget _buildTopBar(BuildContext context, Event event) {
     return Positioned(
       top: 0,
       left: 0,
@@ -102,7 +124,9 @@ class EventDetailsScreen extends StatelessWidget {
                 ),
               ),
               _NavIconButton(
-                iconAsset: AppIcons.bookmarkOutline,
+                iconAsset: event.isBookmarked
+                    ? AppIcons.bookmarkFilled
+                    : AppIcons.bookmarkOutline,
                 onTap: () {},
               ),
             ],
@@ -112,7 +136,9 @@ class EventDetailsScreen extends StatelessWidget {
     );
   }
 
-  Widget _buildBody(BuildContext context) {
+  Widget _buildBody(BuildContext context, EventDetailsState state) {
+    final event = state.event;
+
     return Padding(
       padding: const EdgeInsets.fromLTRB(24, 8, 24, 120),
       child: Column(
@@ -134,10 +160,21 @@ class EventDetailsScreen extends StatelessWidget {
           ),
           const SizedBox(height: 24),
           OrganizerRow(
-            name: "organizerName",
+            name: event.organizerName ?? event.venueName ?? 'Ticketmaster',
             role: AppStrings.organizer,
             onFollow: () {},
           ),
+          if (state.errorMessage != null) ...[
+            const SizedBox(height: 16),
+            Text(
+              state.errorMessage!,
+              style: AppTextStyles.infoSubtitle.copyWith(color: AppColors.categorySports),
+            ),
+            TextButton(
+              onPressed: context.read<EventDetailsCubit>().load,
+              child: const Text('Retry details'),
+            ),
+          ],
           const SizedBox(height: 28),
           Text(AppStrings.aboutEvent, style: AppTextStyles.sectionTitle),
           const SizedBox(height: 12),
@@ -146,6 +183,7 @@ class EventDetailsScreen extends StatelessWidget {
               style: AppTextStyles.aboutBody,
               children: [
                 TextSpan(text: event.category.label),
+                if (event.about != null) TextSpan(text: '\n${event.about}'),
                 TextSpan(
                     text: AppStrings.readMore, style: AppTextStyles.readMore),
               ],
@@ -156,7 +194,9 @@ class EventDetailsScreen extends StatelessWidget {
     );
   }
 
-  Widget _buildBottomBar(BuildContext context) {
+  Widget _buildBottomBar(BuildContext context, Event event) {
+    final price = event.price == null ? 'Ticket' : '${event.price}\$';
+
     return Positioned(
       left: 0,
       right: 0,
@@ -204,7 +244,7 @@ class EventDetailsScreen extends StatelessWidget {
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
                       Text(
-                        '${AppStrings.buyTicket} "30\$"',
+                        '${AppStrings.buyTicket} "$price"',
                         style: AppTextStyles.buttonLabel,
                       ),
                       const Spacer(),
