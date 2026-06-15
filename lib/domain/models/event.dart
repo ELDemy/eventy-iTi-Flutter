@@ -10,6 +10,8 @@ class Event {
     this.category = EventCategory.all,
     this.scheduleLabel,
     this.goingCount,
+    this.date,
+    this.price,
     this.isBookmarked = false,
   });
 
@@ -21,6 +23,8 @@ class Event {
   final EventCategory category;
   final String? scheduleLabel;
   final String? goingCount;
+  final DateTime? date;
+  final int? price;
   final bool isBookmarked;
 
   Event copyWith({
@@ -32,6 +36,8 @@ class Event {
     EventCategory? category,
     String? scheduleLabel,
     String? goingCount,
+    DateTime? date,
+    int? price,
     bool? isBookmarked,
   }) {
     return Event(
@@ -43,6 +49,8 @@ class Event {
       category: category ?? this.category,
       scheduleLabel: scheduleLabel ?? this.scheduleLabel,
       goingCount: goingCount ?? this.goingCount,
+      date: date ?? this.date,
+      price: price ?? this.price,
       isBookmarked: isBookmarked ?? this.isBookmarked,
     );
   }
