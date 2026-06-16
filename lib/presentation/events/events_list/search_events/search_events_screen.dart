@@ -4,6 +4,7 @@ import 'package:events_hub/core/theme/app_text_styles.dart';
 import 'package:events_hub/presentation/events/events_list/widgets/event_controls.dart';
 import 'package:events_hub/presentation/events/events_list/widgets/events_filter_sheet.dart';
 import 'package:events_hub/presentation/events/events_list/widgets/events_list.dart';
+import 'package:events_hub/presentation/favorites/cubit/favorites_cubit.dart';
 import 'package:events_hub/presentation/events/events_list/search_events/cubit/search_events_cubit.dart';
 import 'package:events_hub/presentation/events/events_list/search_events/cubit/search_events_state.dart';
 import 'package:flutter/material.dart';
@@ -59,7 +60,13 @@ class _SearchEventsScreenState extends State<SearchEventsScreen> {
                       ),
                     )
                   else
-                    EventsList(events: state.events),
+                    EventsList(
+                      events: context
+                          .watch<FavoritesCubit>()
+                          .applyFavorites(state.events),
+                      onBookmarkTap:
+                          context.read<FavoritesCubit>().toggleFavorite,
+                    ),
                 ],
               ),
             ),

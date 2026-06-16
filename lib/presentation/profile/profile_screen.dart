@@ -1,37 +1,72 @@
+import 'package:events_hub/core/routes/app_routes.dart';
 import 'package:events_hub/core/theme/app_colors.dart';
 import 'package:events_hub/core/theme/app_text_styles.dart';
-import 'package:events_hub/domain/models/mock_events.dart';
+import 'package:events_hub/domain/models/app_user.dart';
 import 'package:events_hub/presentation/events/events_list/widgets/event_card.dart';
+import 'package:events_hub/presentation/favorites/cubit/favorites_cubit.dart';
+import 'package:events_hub/presentation/favorites/cubit/favorites_state.dart';
+import 'package:events_hub/presentation/profile/cubit/profile_cubit.dart';
+import 'package:events_hub/presentation/profile/cubit/profile_state.dart';
 import 'package:events_hub/presentation/profile/widgets/review_tile.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 
 class ProfileScreen extends StatelessWidget {
   const ProfileScreen({super.key});
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: AppColors.background,
-      body: SafeArea(
-        child: DefaultTabController(
-          length: 3,
-          child: Column(
-            children: [
-              // _buildTopBar(context),
-              const SizedBox(height: 12),
-              _buildProfileHeader(),
-              const SizedBox(height: 8),
-              _buildCounts(),
-              const SizedBox(height: 16),
-              _buildActions(),
-              const SizedBox(height: 12),
-              _buildTabBar(),
-              const SizedBox(height: 8),
-              Expanded(child: _buildTabBarView()),
-            ],
-          ),
-        ),
-      ),
+    return BlocBuilder<ProfileCubit, ProfileState>(
+      builder: (context, profileState) {
+        return BlocBuilder<FavoritesCubit, FavoritesState>(
+          builder: (context, favoritesState) {
+            final user = profileState.user;
+
+            return Scaffold(
+              backgroundColor: AppColors.background,
+              body: SafeArea(
+                child: DefaultTabController(
+                  length: 3,
+                  child: Column(
+                    children: [
+                      const SizedBox(height: 12),
+                      if (profileState.isLoading)
+                        const LinearProgressIndicator(),
+                      _buildProfileHeader(user),
+                      const SizedBox(height: 8),
+                      _buildCounts(user),
+                      if (profileState.errorMessage != null) ...[
+                        const SizedBox(height: 8),
+                        Text(
+                          profileState.errorMessage!,
+                          style: AppTextStyles.infoSubtitle.copyWith(
+                            color: AppColors.categorySports,
+                          ),
+                        ),
+                        TextButton(
+                          onPressed: context.read<ProfileCubit>().loadProfile,
+                          child: const Text('Retry profile'),
+                        ),
+                      ],
+                      const SizedBox(height: 16),
+                      _buildActions(),
+                      const SizedBox(height: 12),
+                      _buildTabBar(),
+                      const SizedBox(height: 8),
+                      Expanded(
+                        child: _buildTabBarView(
+                          user: user,
+                          favoritesState: favoritesState,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+            );
+          },
+        );
+      },
     );
   }
 
@@ -51,21 +86,28 @@ class ProfileScreen extends StatelessWidget {
     );
   }
 
-  Widget _buildProfileHeader() {
+  Widget _buildProfileHeader(AppUser? user) {
     return Column(
       children: [
         CircleAvatar(
           radius: 44,
-          backgroundImage: const AssetImage('assets/images/avatar_1.png'),
+          backgroundImage: user?.photoUrl != null
+              ? NetworkImage(user!.photoUrl!)
+              : const AssetImage('assets/images/avatar_1.png') as ImageProvider,
           backgroundColor: AppColors.surface,
         ),
         const SizedBox(height: 12),
-        Text('David Silbia', style: AppTextStyles.signInTitle),
+        Text(user?.fullName ?? 'EventHub User',
+            style: AppTextStyles.signInTitle),
+        if (user?.email.isNotEmpty ?? false) ...[
+          const SizedBox(height: 4),
+          Text(user!.email, style: AppTextStyles.infoSubtitle),
+        ],
       ],
     );
   }
 
-  Widget _buildCounts() {
+  Widget _buildCounts(AppUser? user) {
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 48),
       child: Row(
@@ -73,20 +115,22 @@ class ProfileScreen extends StatelessWidget {
         children: [
           Expanded(
             child: Column(
-              children: const [
-                Text('350', style: AppTextStyles.goingLabel),
-                SizedBox(height: 4),
-                Text('Following', style: AppTextStyles.infoSubtitle),
+              children: [
+                Text('${user?.followingCount ?? 0}',
+                    style: AppTextStyles.goingLabel),
+                const SizedBox(height: 4),
+                const Text('Following', style: AppTextStyles.infoSubtitle),
               ],
             ),
           ),
           Container(height: 36, width: 1, color: AppColors.divider),
           Expanded(
             child: Column(
-              children: const [
-                Text('346', style: AppTextStyles.goingLabel),
-                SizedBox(height: 4),
-                Text('Followers', style: AppTextStyles.infoSubtitle),
+              children: [
+                Text('${user?.followersCount ?? 0}',
+                    style: AppTextStyles.goingLabel),
+                const SizedBox(height: 4),
+                const Text('Followers', style: AppTextStyles.infoSubtitle),
               ],
             ),
           ),
@@ -152,40 +196,64 @@ class ProfileScreen extends StatelessWidget {
     );
   }
 
-  Widget _buildTabBarView() {
+  Widget _buildTabBarView({
+    required AppUser? user,
+    required FavoritesState favoritesState,
+  }) {
     return TabBarView(
       children: [
-        _buildAboutTab(),
-        _buildEventTab(),
+        _buildAboutTab(user),
+        _buildEventTab(favoritesState),
         _buildReviewsTab(),
       ],
     );
   }
 
-  Widget _buildAboutTab() {
+  Widget _buildAboutTab(AppUser? user) {
     return SingleChildScrollView(
       padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
-        children: const [
+        children: [
           Text(
-            'Enjoy your favorite dishe and a lovely your friends and family and have a great time. Food from local food trucks will be available for purchase.',
+            user?.about ??
+                'Tell people about yourself and the events you love.',
             style: AppTextStyles.aboutBody,
           ),
-          SizedBox(height: 6),
-          Text('Read More', style: AppTextStyles.readMore),
+          const SizedBox(height: 6),
+          const Text('Read More', style: AppTextStyles.readMore),
         ],
       ),
     );
   }
 
-  Widget _buildEventTab() {
-    final events = MockEvents.upcoming;
+  Widget _buildEventTab(FavoritesState state) {
+    final events = state.events;
+    if (state.isLoading) {
+      return const Center(child: CircularProgressIndicator());
+    }
+    if (events.isEmpty) {
+      return const Center(
+        child: Text(
+          'No favorite events yet.',
+          style: AppTextStyles.infoSubtitle,
+        ),
+      );
+    }
+
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
       child: ListView.builder(
         itemCount: events.length,
-        itemBuilder: (context, index) => EventCard(event: events[index]),
+        itemBuilder: (context, index) {
+          final event = events[index];
+          return EventCard(
+            event: event,
+            onTap: () => AppNavigator.goToEventDetails(context, event),
+            onBookmarkTap: () =>
+                context.read<FavoritesCubit>().toggleFavorite(event),
+          );
+        },
       ),
     );
   }

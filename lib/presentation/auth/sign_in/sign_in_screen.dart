@@ -7,7 +7,10 @@ import 'package:events_hub/core/widgets/app_text_field.dart';
 import 'package:events_hub/core/widgets/auth_background.dart';
 import 'package:events_hub/core/widgets/social_login_button.dart';
 import 'package:events_hub/presentation/auth/components/TopLogo.dart';
+import 'package:events_hub/presentation/auth/cubit/sign_in_cubit.dart';
+import 'package:events_hub/presentation/auth/cubit/sign_in_state.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 
 class SignInScreen extends StatefulWidget {
   const SignInScreen({super.key});
@@ -17,85 +20,125 @@ class SignInScreen extends StatefulWidget {
 }
 
 class _SignInScreenState extends State<SignInScreen> {
-  bool _rememberMe = true;
+  final TextEditingController _emailController = TextEditingController();
+  final TextEditingController _passwordController = TextEditingController();
+
+  @override
+  void dispose() {
+    _emailController.dispose();
+    _passwordController.dispose();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: AppColors.background,
-      body: ColoredBackground(
-        child: SafeArea(
-          child: SingleChildScrollView(
-            padding: const EdgeInsets.symmetric(horizontal: 28),
-            child: Column(
-              children: [
-                const SizedBox(height: 24),
-                TopLogo(),
-                const SizedBox(height: 36),
-                Align(
-                  alignment: Alignment.centerLeft,
-                  child:
-                      Text(AppStrings.signIn, style: AppTextStyles.signInTitle),
+    return BlocProvider(
+      create: (_) => SignInCubit(),
+      child: BlocConsumer<SignInCubit, SignInState>(
+        listener: (context, state) {
+          final rememberedEmail = state.rememberedEmail;
+          if (rememberedEmail != null &&
+              rememberedEmail.isNotEmpty &&
+              _emailController.text.isEmpty) {
+            _emailController.text = rememberedEmail;
+          }
+        },
+        builder: (context, state) {
+          return Scaffold(
+            backgroundColor: AppColors.background,
+            body: ColoredBackground(
+              child: SafeArea(
+                child: SingleChildScrollView(
+                  padding: const EdgeInsets.symmetric(horizontal: 28),
+                  child: Column(
+                    children: [
+                      const SizedBox(height: 24),
+                      TopLogo(),
+                      const SizedBox(height: 36),
+                      Align(
+                        alignment: Alignment.centerLeft,
+                        child: Text(
+                          AppStrings.signIn,
+                          style: AppTextStyles.signInTitle,
+                        ),
+                      ),
+                      const SizedBox(height: 21),
+                      AppTextField(
+                        controller: _emailController,
+                        hint: AppStrings.emailHint,
+                        prefixIconAsset: AppIcons.mail,
+                        keyboardType: TextInputType.emailAddress,
+                      ),
+                      const SizedBox(height: 19),
+                      AppTextField(
+                        controller: _passwordController,
+                        hint: AppStrings.passwordHint,
+                        prefixIconAsset: AppIcons.lock,
+                        suffixIconAsset: AppIcons.lock,
+                        obscureText: true,
+                      ),
+                      const SizedBox(height: 20),
+                      _buildRememberForgotRow(context, state),
+                      if (state.errorMessage != null) ...[
+                        const SizedBox(height: 16),
+                        Text(
+                          state.errorMessage!,
+                          textAlign: TextAlign.center,
+                          style: AppTextStyles.body3.copyWith(
+                            color: AppColors.categorySports,
+                          ),
+                        ),
+                      ],
+                      const SizedBox(height: 36),
+                      _buildSignInButton(context, state),
+                      const SizedBox(height: 24),
+                      Text(AppStrings.or, style: AppTextStyles.orDivider),
+                      const SizedBox(height: 5),
+                      SocialLoginButton(
+                        label: AppStrings.loginWithGoogle,
+                        iconAsset: AppIcons.google,
+                        onPressed: () {},
+                      ),
+                      const SizedBox(height: 17),
+                      SocialLoginButton(
+                        label: AppStrings.loginWithFacebook,
+                        iconAsset: AppIcons.facebook,
+                        onPressed: () {},
+                      ),
+                      const SizedBox(height: 20),
+                      _buildSignUpFooter(context),
+                      const SizedBox(height: 24),
+                    ],
+                  ),
                 ),
-                const SizedBox(height: 21),
-                const AppTextField(
-                  hint: AppStrings.emailHint,
-                  prefixIconAsset: AppIcons.mail,
-                  keyboardType: TextInputType.emailAddress,
-                ),
-                const SizedBox(height: 19),
-                const AppTextField(
-                  hint: AppStrings.passwordHint,
-                  prefixIconAsset: AppIcons.lock,
-                  suffixIconAsset: AppIcons.lock,
-                  obscureText: true,
-                ),
-                const SizedBox(height: 20),
-                _buildRememberForgotRow(),
-                const SizedBox(height: 36),
-                _buildSignInButton(context),
-                const SizedBox(height: 24),
-                Text(AppStrings.or, style: AppTextStyles.orDivider),
-                const SizedBox(height: 5),
-                SocialLoginButton(
-                  label: AppStrings.loginWithGoogle,
-                  iconAsset: AppIcons.google,
-                  onPressed: () {},
-                ),
-                const SizedBox(height: 17),
-                SocialLoginButton(
-                  label: AppStrings.loginWithFacebook,
-                  iconAsset: AppIcons.facebook,
-                  onPressed: () {},
-                ),
-                const SizedBox(height: 20),
-                _buildSignUpFooter(context),
-                const SizedBox(height: 24),
-              ],
+              ),
             ),
-          ),
-        ),
+          );
+        },
       ),
     );
   }
 
-  Widget _buildRememberForgotRow() {
+  Widget _buildRememberForgotRow(BuildContext context, SignInState state) {
     return Row(
       children: [
         GestureDetector(
-          onTap: () => setState(() => _rememberMe = !_rememberMe),
+          onTap: () =>
+              context.read<SignInCubit>().setRememberMe(!state.rememberMe),
           child: AnimatedContainer(
             duration: const Duration(milliseconds: 200),
             width: 32,
             height: 19,
             decoration: BoxDecoration(
-              color: _rememberMe ? AppColors.primary : AppColors.inputBorder,
+              color:
+                  state.rememberMe ? AppColors.primary : AppColors.inputBorder,
               borderRadius: BorderRadius.circular(95),
             ),
             child: AnimatedAlign(
               duration: const Duration(milliseconds: 200),
-              alignment:
-                  _rememberMe ? Alignment.centerRight : Alignment.centerLeft,
+              alignment: state.rememberMe
+                  ? Alignment.centerRight
+                  : Alignment.centerLeft,
               child: Container(
                 width: 15,
                 height: 15,
@@ -119,7 +162,7 @@ class _SignInScreenState extends State<SignInScreen> {
     );
   }
 
-  Widget _buildSignInButton(BuildContext context) {
+  Widget _buildSignInButton(BuildContext context, SignInState state) {
     return SizedBox(
       height: 58,
       width: double.infinity,
@@ -135,7 +178,12 @@ class _SignInScreenState extends State<SignInScreen> {
           ],
         ),
         child: ElevatedButton(
-          onPressed: () => {AppNavigator.goToHome(context)},
+          onPressed: state.isLoading
+              ? null
+              : () => context.read<SignInCubit>().signIn(
+                    email: _emailController.text,
+                    password: _passwordController.text,
+                  ),
           style: ElevatedButton.styleFrom(
             backgroundColor: AppColors.primary,
             foregroundColor: AppColors.textOnPrimary,
@@ -147,7 +195,10 @@ class _SignInScreenState extends State<SignInScreen> {
           child: Row(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              Text(AppStrings.signInButton, style: AppTextStyles.buttonLabel),
+              Text(
+                state.isLoading ? 'Signing in...' : AppStrings.signInButton,
+                style: AppTextStyles.buttonLabel,
+              ),
               const Spacer(),
               Container(
                 width: 30,

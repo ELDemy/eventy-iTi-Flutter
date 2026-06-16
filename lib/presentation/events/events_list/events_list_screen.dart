@@ -11,6 +11,7 @@ import 'package:events_hub/presentation/events/events_list/widgets/event_control
 import 'package:events_hub/presentation/events/events_list/widgets/events_filter_sheet.dart';
 import 'package:events_hub/presentation/events/events_list/widgets/events_list.dart';
 import 'package:events_hub/presentation/events/events_list/widgets/events_tab_bar.dart';
+import 'package:events_hub/presentation/favorites/cubit/favorites_cubit.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_svg/flutter_svg.dart';
@@ -45,6 +46,9 @@ class _EventsListScreenState extends State<EventsListScreen> {
               final filteredEvents = context
                   .read<EventsFilterCubit>()
                   .applyFilters(listState.events);
+              final favoritesCubit = context.watch<FavoritesCubit>();
+              final visibleEvents =
+                  favoritesCubit.applyFavorites(filteredEvents);
               return Scaffold(
                 appBar: AppBar(
                   centerTitle: false,
@@ -94,7 +98,8 @@ class _EventsListScreenState extends State<EventsListScreen> {
                         )
                       else
                         EventsList(
-                          events: filteredEvents,
+                          events: visibleEvents,
+                          onBookmarkTap: favoritesCubit.toggleFavorite,
                           isLoadingMore: listState.isLoadingMore,
                           onLoadMore: context.read<EventsListCubit>().loadMore,
                         ),

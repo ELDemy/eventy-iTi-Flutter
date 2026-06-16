@@ -47,6 +47,16 @@ dependencies:
   collection: 1.19.0
   persistent_bottom_nav_bar: ^6.2.1
   flutter_advanced_drawer: ^1.5.0
+  intl: ^0.20.2
+  # Initializes Firebase services.
+  firebase_core: ^4.10.0
+  # Stores user profile and favorite event documents.
+  cloud_firestore: ^6.5.0
+  # Firebase email/password authentication and session persistence.
+  firebase_auth: ^6.5.2
+  # Stores remember-me preference and remembered email only.
+  shared_preferences: ^2.3.5
+
 
 dev_dependencies:
   flutter_test:

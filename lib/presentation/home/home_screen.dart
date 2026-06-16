@@ -2,6 +2,7 @@ import 'package:events_hub/core/constants/app_strings.dart';
 import 'package:events_hub/core/routes/app_routes.dart';
 import 'package:events_hub/core/theme/app_colors.dart';
 import 'package:events_hub/domain/models/event_category.dart';
+import 'package:events_hub/presentation/favorites/cubit/favorites_cubit.dart';
 import 'package:events_hub/presentation/home/cubit/home_cubit.dart';
 import 'package:events_hub/presentation/home/cubit/home_state.dart';
 import 'package:events_hub/presentation/home/widgets/featured_event_card.dart';
@@ -48,6 +49,8 @@ class _HomeView extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final favoritesCubit = context.watch<FavoritesCubit>();
+
     return Scaffold(
       backgroundColor: AppColors.background,
       body: Column(
@@ -87,11 +90,13 @@ class _HomeView extends StatelessWidget {
                             padding: const EdgeInsets.only(left: 24),
                             itemCount: state.popularEvents.length,
                             itemBuilder: (context, index) {
-                              final event = state.popularEvents[index];
+                              final event = favoritesCubit.applyFavorite(
+                                state.popularEvents[index],
+                              );
                               return FeaturedEventCard(
                                 event: event,
                                 onBookmarkTap: () =>
-                                    cubit.toggleBookmark(event.id),
+                                    favoritesCubit.toggleFavorite(event),
                                 onTap: () => AppNavigator.goToEventDetails(
                                     context, event),
                               );
@@ -107,12 +112,19 @@ class _HomeView extends StatelessWidget {
                           const _HomeEmptyView()
                         else
                           ...state.nearbyEvents.map(
-                            (event) => NearbyEventCard(
-                              event: event,
-                              onBookmarkTap: () =>
-                                  cubit.toggleBookmark(event.id),
-                              onTap: () => AppNavigator.goToEventDetails(
-                                  context, event)),
+                            (event) {
+                              final favoriteEvent =
+                                  favoritesCubit.applyFavorite(event);
+                              return NearbyEventCard(
+                                event: favoriteEvent,
+                                onBookmarkTap: () =>
+                                    favoritesCubit.toggleFavorite(favoriteEvent),
+                                onTap: () => AppNavigator.goToEventDetails(
+                                  context,
+                                  favoriteEvent,
+                                ),
+                              );
+                            },
                           ),
                       ],
                     ),

@@ -80,13 +80,11 @@ class EventCard extends StatelessWidget {
             GestureDetector(
               onTap: onBookmarkTap,
               child: SvgPicture.asset(
-                AppIcons.bookmarkOutline,
+                event.isBookmarked
+                    ? AppIcons.bookmarkFilled
+                    : AppIcons.bookmarkOutline,
                 width: 16,
                 height: 16,
-                colorFilter: ColorFilter.mode(
-                  event.isBookmarked ? AppColors.primary : AppColors.textSub,
-                  BlendMode.srcIn,
-                ),
               ),
             ),
           ],

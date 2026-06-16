@@ -1,11 +1,13 @@
 import 'package:events_hub/core/theme/app_colors.dart';
 import 'package:events_hub/core/theme/app_text_styles.dart';
+import 'package:events_hub/domain/models/app_user.dart';
 import 'package:flutter/material.dart';
 
 class AppDrawer extends StatelessWidget {
   const AppDrawer({
     super.key,
     required this.onClose,
+    this.user,
     this.onProfileTap,
     this.onMassageTap,
     this.onCalendarTap,
@@ -17,6 +19,7 @@ class AppDrawer extends StatelessWidget {
   });
 
   final VoidCallback onClose;
+  final AppUser? user;
   final VoidCallback? onProfileTap;
   final VoidCallback? onMassageTap;
   final VoidCallback? onCalendarTap;
@@ -92,7 +95,10 @@ class AppDrawer extends StatelessWidget {
       children: [
         CircleAvatar(
           radius: 28,
-          backgroundImage: const AssetImage('assets/images/avatar_1.png'),
+          backgroundImage: user?.photoUrl != null
+              ? NetworkImage(user!.photoUrl!)
+              : const AssetImage('assets/images/avatar_1.png')
+                  as ImageProvider,
           backgroundColor: AppColors.surface,
         ),
         const SizedBox(width: 16),
@@ -100,7 +106,10 @@ class AppDrawer extends StatelessWidget {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Text('Ashfak Sayem', style: AppTextStyles.homeSectionTitle),
+              Text(
+                user?.fullName ?? 'EventHub User',
+                style: AppTextStyles.homeSectionTitle,
+              ),
               const SizedBox(height: 4),
               Text('View profile', style: AppTextStyles.infoSubtitle),
             ],

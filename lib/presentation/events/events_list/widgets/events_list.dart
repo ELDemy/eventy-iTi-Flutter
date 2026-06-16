@@ -10,12 +10,14 @@ class EventsList extends StatelessWidget {
     super.key,
     required this.events,
     this.onEventTap,
+    this.onBookmarkTap,
     this.onLoadMore,
     this.isLoadingMore = false,
   });
 
   final List<Event> events;
   final Function(Event)? onEventTap;
+  final Function(Event)? onBookmarkTap;
   final VoidCallback? onLoadMore;
   final bool isLoadingMore;
 
@@ -58,7 +60,7 @@ class EventsList extends StatelessWidget {
                 AppNavigator.goToEventDetails(context, event);
               }
             },
-            onBookmarkTap: () {},
+            onBookmarkTap: () => onBookmarkTap?.call(event),
           );
         },
       ),

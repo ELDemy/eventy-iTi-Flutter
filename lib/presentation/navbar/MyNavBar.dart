@@ -1,5 +1,5 @@
+import 'package:events_hub/core/di/app_dependencies.dart';
 import 'package:events_hub/core/constants/app_strings.dart';
-import 'package:events_hub/core/routes/app_routes.dart';
 import 'package:events_hub/core/theme/AppIcons.dart';
 import 'package:events_hub/core/theme/app_text_styles.dart';
 import 'package:events_hub/presentation/add/add_screen.dart';
@@ -8,8 +8,11 @@ import 'package:events_hub/presentation/home/home_screen.dart';
 import 'package:events_hub/presentation/map/map_screen.dart';
 import 'package:events_hub/presentation/navbar/app_drawer.dart';
 import 'package:events_hub/presentation/profile/profile_screen.dart';
+import 'package:events_hub/presentation/profile/cubit/profile_cubit.dart';
+import 'package:events_hub/presentation/profile/cubit/profile_state.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_advanced_drawer/flutter_advanced_drawer.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:persistent_bottom_nav_bar/persistent_bottom_nav_bar.dart';
 
@@ -46,7 +49,9 @@ class _MyNavBarState extends State<MyNavBar> {
 
   @override
   Widget build(BuildContext context) {
-    return AdvancedDrawer(
+    return BlocBuilder<ProfileCubit, ProfileState>(
+      builder: (context, profileState) {
+        return AdvancedDrawer(
       backdropColor: Colors.black.withValues(alpha: 0.2),
       controller: _drawerController,
       animationCurve: Curves.easeInOut,
@@ -57,6 +62,7 @@ class _MyNavBarState extends State<MyNavBar> {
         borderRadius: BorderRadius.zero,
       ),
       drawer: AppDrawer(
+        user: profileState.user,
         onClose: _drawerController.hideDrawer,
         onProfileTap: () {
           _tabController.index = 4;
@@ -68,8 +74,8 @@ class _MyNavBarState extends State<MyNavBar> {
         onContactUsTap: () {},
         onSettingsTap: () {},
         onHelpTap: () {},
-        onSignOutTap: () {
-          AppNavigator.goToSignIn(context);
+        onSignOutTap: () async {
+          await AppDependencies.authRepository.signOut();
         },
       ),
       child: PersistentTabView(
@@ -129,6 +135,8 @@ class _MyNavBarState extends State<MyNavBar> {
           const ProfileScreen(),
         ],
       ),
+    );
+      },
     );
   }
 

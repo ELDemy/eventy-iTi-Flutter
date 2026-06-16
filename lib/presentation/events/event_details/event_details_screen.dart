@@ -10,6 +10,7 @@ import 'package:events_hub/presentation/events/event_details/cubit/event_details
 import 'package:events_hub/presentation/events/event_details/widgets/attendees_floating_card.dart';
 import 'package:events_hub/presentation/events/event_details/widgets/event_info_row.dart';
 import 'package:events_hub/presentation/events/event_details/widgets/organizer_row.dart';
+import 'package:events_hub/presentation/favorites/cubit/favorites_cubit.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_svg/flutter_svg.dart';
@@ -27,18 +28,22 @@ class EventDetailsScreen extends StatelessWidget {
       create: (_) => EventDetailsCubit(initialEvent: event),
       child: BlocBuilder<EventDetailsCubit, EventDetailsState>(
         builder: (context, state) {
+          final event =
+              context.watch<FavoritesCubit>().applyFavorite(state.event);
           return Scaffold(
             backgroundColor: AppColors.background,
             body: Stack(
               children: [
                 CustomScrollView(
                   slivers: [
-                    SliverToBoxAdapter(child: _buildHeroSection(state.event)),
-                    SliverToBoxAdapter(child: _buildBody(context, state)),
+                    SliverToBoxAdapter(child: _buildHeroSection(event)),
+                    SliverToBoxAdapter(
+                      child: _buildBody(context, state, event),
+                    ),
                   ],
                 ),
-                _buildTopBar(context, state.event),
-                _buildBottomBar(context, state.event),
+                _buildTopBar(context, event),
+                _buildBottomBar(context, event),
                 if (state.isLoading)
                   const Positioned(
                     left: 0,
@@ -92,7 +97,7 @@ class EventDetailsScreen extends StatelessWidget {
             right: 0,
             top: _heroHeight - 30,
             child: AttendeesFloatingCard(
-              goingLabel: event.goingCount ?? "0",
+              goingLabel: '${event.goingCount ?? ""} Going',
               onInvite: () {},
             ),
           ),
@@ -127,7 +132,8 @@ class EventDetailsScreen extends StatelessWidget {
                 iconAsset: event.isBookmarked
                     ? AppIcons.bookmarkFilled
                     : AppIcons.bookmarkOutline,
-                onTap: () {},
+                onTap: () =>
+                    context.read<FavoritesCubit>().toggleFavorite(event),
               ),
             ],
           ),
@@ -136,9 +142,11 @@ class EventDetailsScreen extends StatelessWidget {
     );
   }
 
-  Widget _buildBody(BuildContext context, EventDetailsState state) {
-    final event = state.event;
-
+  Widget _buildBody(
+    BuildContext context,
+    EventDetailsState state,
+    Event event,
+  ) {
     return Padding(
       padding: const EdgeInsets.fromLTRB(24, 8, 24, 120),
       child: Column(
@@ -149,14 +157,14 @@ class EventDetailsScreen extends StatelessWidget {
           EventInfoRow(
             iconAsset: AppIcons.calendar,
             title: event.dateTime,
-            subtitle: event.dateTime,
+            subtitle: event.localTime ?? "",
           ),
           const SizedBox(height: 16),
           EventInfoRow(
             iconAsset: AppIcons.location,
             iconBackgroundOpacity: 0.12,
             title: event.location,
-            subtitle: event.location,
+            subtitle: event.venueName ?? "",
           ),
           const SizedBox(height: 24),
           OrganizerRow(
@@ -168,7 +176,8 @@ class EventDetailsScreen extends StatelessWidget {
             const SizedBox(height: 16),
             Text(
               state.errorMessage!,
-              style: AppTextStyles.infoSubtitle.copyWith(color: AppColors.categorySports),
+              style: AppTextStyles.infoSubtitle
+                  .copyWith(color: AppColors.categorySports),
             ),
             TextButton(
               onPressed: context.read<EventDetailsCubit>().load,
