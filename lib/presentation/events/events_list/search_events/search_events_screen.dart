@@ -11,7 +11,12 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 class SearchEventsScreen extends StatefulWidget {
-  const SearchEventsScreen({super.key});
+  const SearchEventsScreen({
+    super.key,
+    this.nearbyLondon = false,
+  });
+
+  final bool nearbyLondon;
 
   @override
   State<SearchEventsScreen> createState() => _SearchEventsScreenState();
@@ -29,7 +34,7 @@ class _SearchEventsScreenState extends State<SearchEventsScreen> {
   @override
   Widget build(BuildContext context) {
     return BlocProvider(
-      create: (_) => SearchEventsCubit(),
+      create: (_) => SearchEventsCubit(nearbyLondon: widget.nearbyLondon),
       child: BlocBuilder<SearchEventsCubit, SearchEventsState>(
         builder: (context, state) {
           return Scaffold(

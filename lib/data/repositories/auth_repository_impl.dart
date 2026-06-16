@@ -39,6 +39,7 @@ class AuthRepositoryImpl implements AuthRepository {
       await _localDataSource.saveRememberedEmail(email);
     } else {
       await _localDataSource.clearRememberedEmail();
+      await _localDataSource.setSessionOnlyLogin(true);
     }
     return user.toEntity();
   }
@@ -58,11 +59,28 @@ class AuthRepositoryImpl implements AuthRepository {
   }
 
   @override
-  Future<void> signOut() => _remoteDataSource.signOut();
+  Future<void> signOut() async {
+    await _localDataSource.setSessionOnlyLogin(false);
+    await _remoteDataSource.signOut();
+  }
 
   @override
   Future<bool> getRememberMe() => _localDataSource.getRememberMe();
 
   @override
   Future<String?> getRememberedEmail() => _localDataSource.getRememberedEmail();
+
+  @override
+  Future<bool> getSessionOnlyLogin() =>
+      _localDataSource.getSessionOnlyLogin();
+
+  @override
+  Future<void> clearSessionOnlyLogin() =>
+      _localDataSource.setSessionOnlyLogin(false);
+
+  @override
+  Future<bool> hasSeenOnboarding() => _localDataSource.hasSeenOnboarding();
+
+  @override
+  Future<void> markOnboardingSeen() => _localDataSource.markOnboardingSeen();
 }

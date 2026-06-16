@@ -25,4 +25,12 @@ abstract class AuthRepository {
   Future<bool> getRememberMe();
 
   Future<String?> getRememberedEmail();
+
+  Future<bool> getSessionOnlyLogin();
+
+  Future<void> clearSessionOnlyLogin();
+
+  Future<bool> hasSeenOnboarding();
+
+  Future<void> markOnboardingSeen();
 }

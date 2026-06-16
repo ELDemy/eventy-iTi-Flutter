@@ -28,6 +28,7 @@ class MyNavBar extends StatefulWidget {
 class _MyNavBarState extends State<MyNavBar> {
   late PersistentTabController _tabController;
   final AdvancedDrawerController _drawerController = AdvancedDrawerController();
+  int _lastAvailableIndex = 0;
 
   @override
   void initState() {
@@ -52,90 +53,135 @@ class _MyNavBarState extends State<MyNavBar> {
     return BlocBuilder<ProfileCubit, ProfileState>(
       builder: (context, profileState) {
         return AdvancedDrawer(
-      backdropColor: Colors.black.withValues(alpha: 0.2),
-      controller: _drawerController,
-      animationCurve: Curves.easeInOut,
-      animationDuration: const Duration(milliseconds: 300),
-      animateChildDecoration: true,
-      rtlOpening: false,
-      childDecoration: const BoxDecoration(
-        borderRadius: BorderRadius.zero,
-      ),
-      drawer: AppDrawer(
-        user: profileState.user,
-        onClose: _drawerController.hideDrawer,
-        onProfileTap: () {
-          _tabController.index = 4;
-          setState(() {});
-        },
-        onMassageTap: () {},
-        onCalendarTap: () {},
-        onBookmarkTap: () {},
-        onContactUsTap: () {},
-        onSettingsTap: () {},
-        onHelpTap: () {},
-        onSignOutTap: () async {
-          await AppDependencies.authRepository.signOut();
-        },
-      ),
-      child: PersistentTabView(
-        context,
-        controller: _tabController,
-        navBarStyle: NavBarStyle.style15,
-        backgroundColor: AppColors.surface,
-        navBarHeight: 76,
-        padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 0),
-        decoration: NavBarDecoration(
-          boxShadow: [
-            BoxShadow(
-              color: AppColors.textPrimary.withValues(alpha: 0.08),
-              offset: const Offset(0, -4),
-              blurRadius: 20,
-              spreadRadius: 0,
+          backdropColor: Colors.black.withValues(alpha: 0.2),
+          controller: _drawerController,
+          animationCurve: Curves.easeInOut,
+          animationDuration: const Duration(milliseconds: 300),
+          animateChildDecoration: true,
+          rtlOpening: false,
+          childDecoration: const BoxDecoration(
+            borderRadius: BorderRadius.zero,
+          ),
+          drawer: AppDrawer(
+            user: profileState.user,
+            onClose: _drawerController.hideDrawer,
+            onProfileTap: () {
+              _selectAvailableTab(4);
+            },
+            onMassageTap: () {},
+            onCalendarTap: () {},
+            onBookmarkTap: () {},
+            onContactUsTap: () {},
+            onSettingsTap: () {},
+            onHelpTap: () {},
+            onSignOutTap: () async {
+              await AppDependencies.authRepository.signOut();
+            },
+          ),
+          child: PersistentTabView(
+            context,
+            controller: _tabController,
+            navBarStyle: NavBarStyle.style15,
+            backgroundColor: AppColors.surface,
+            navBarHeight: 76,
+            padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 0),
+            decoration: NavBarDecoration(
+              boxShadow: [
+                BoxShadow(
+                  color: AppColors.textPrimary.withValues(alpha: 0.08),
+                  offset: const Offset(0, -4),
+                  blurRadius: 20,
+                  spreadRadius: 0,
+                ),
+              ],
+              border: Border(
+                top: BorderSide(
+                  color: AppColors.textPrimary.withValues(alpha: 0.06),
+                  width: 0.5,
+                ),
+              ),
+            ),
+            onItemSelected: _handleTabSelected,
+            items: [
+              _buildNavItem(
+                icon: AppIcons.compass,
+                title: AppStrings.explore,
+                index: 0,
+              ),
+              _buildNavItem(
+                icon: AppIcons.navCalendar,
+                title: AppStrings.events,
+                index: 1,
+              ),
+              _buildFabItem(),
+              _buildNavItem(
+                icon: AppIcons.location,
+                title: AppStrings.map,
+                index: 3,
+              ),
+              _buildNavItem(
+                icon: AppIcons.navProfile,
+                title: AppStrings.profile,
+                index: 4,
+              ),
+            ],
+            screens: [
+              HomeScreen(
+                onMenuTap: _toggleDrawer,
+                onSeeAllEvents: () => _selectAvailableTab(1),
+              ),
+              const EventsListScreen(),
+              const AddScreen(),
+              const MapScreen(),
+              const ProfileScreen(),
+            ],
+          ),
+        );
+      },
+    );
+  }
+
+  void _handleTabSelected(int index) {
+    if (index == 2 || index == 3) {
+      _tabController.index = _lastAvailableIndex;
+      setState(() {});
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        if (!mounted) return;
+        _tabController.index = _lastAvailableIndex;
+        setState(() {});
+      });
+      _showComingSoonDialog(index == 2 ? 'Add Event' : 'Map');
+      return;
+    }
+    _lastAvailableIndex = index;
+    setState(() {});
+  }
+
+  void _selectAvailableTab(int index) {
+    _lastAvailableIndex = index;
+    _tabController.index = index;
+    setState(() {});
+  }
+
+  void _showComingSoonDialog(String featureName) {
+    showDialog<void>(
+      context: context,
+      builder: (context) {
+        return AlertDialog(
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(18),
+          ),
+          title: Text('$featureName is coming soon'),
+          content: const Text(
+            'This feature is not available yet, but it is already on the roadmap.',
+          ),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.of(context).pop(),
+              child: const Text('Got it'),
             ),
           ],
-          border: Border(
-            top: BorderSide(
-              color: AppColors.textPrimary.withValues(alpha: 0.06),
-              width: 0.5,
-            ),
-          ),
-        ),
-        onItemSelected: (index) {
-          setState(() {});
-        },
-        items: [
-          _buildNavItem(
-            icon: AppIcons.compass,
-            title: AppStrings.explore,
-            index: 0,
-          ),
-          _buildNavItem(
-            icon: AppIcons.navCalendar,
-            title: AppStrings.events,
-            index: 1,
-          ),
-          _buildFabItem(),
-          _buildNavItem(
-            icon: AppIcons.location,
-            title: AppStrings.map,
-            index: 3,
-          ),
-          _buildNavItem(
-            icon: AppIcons.navProfile,
-            title: AppStrings.profile,
-            index: 4,
-          ),
-        ],
-        screens: [
-          HomeScreen(onMenuTap: _toggleDrawer),
-          const EventsListScreen(),
-          const AddScreen(),
-          const MapScreen(),
-          const ProfileScreen(),
-        ],
-      ),
-    );
+        );
       },
     );
   }

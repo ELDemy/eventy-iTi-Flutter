@@ -17,9 +17,11 @@ class HomeScreen extends StatelessWidget {
   const HomeScreen({
     super.key,
     this.onMenuTap,
+    this.onSeeAllEvents,
   });
 
   final VoidCallback? onMenuTap;
+  final VoidCallback? onSeeAllEvents;
 
   @override
   Widget build(BuildContext context) {
@@ -30,6 +32,7 @@ class HomeScreen extends StatelessWidget {
           cubit: context.read<HomeCubit>(),
           state: context.watch<HomeCubit>().state,
           onMenuTap: onMenuTap,
+          onSeeAllEvents: onSeeAllEvents,
         );
       }),
     );
@@ -40,11 +43,13 @@ class _HomeView extends StatelessWidget {
   final HomeState state;
   final HomeCubit cubit;
   final VoidCallback? onMenuTap;
+  final VoidCallback? onSeeAllEvents;
 
   const _HomeView({
     required this.state,
     required this.cubit,
     this.onMenuTap,
+    this.onSeeAllEvents,
   });
 
   @override
@@ -79,7 +84,7 @@ class _HomeView extends StatelessWidget {
                       children: [
                         HomeSectionHeader(
                           title: AppStrings.upcomingEventsSection,
-                          onSeeAllTap: () {},
+                          onSeeAllTap: onSeeAllEvents ?? () {},
                         ),
                         SizedBox(
                           height: 255,
@@ -106,7 +111,10 @@ class _HomeView extends StatelessWidget {
                         const HomePromoBanner(),
                         HomeSectionHeader(
                           title: AppStrings.nearbyYou,
-                          onSeeAllTap: () {},
+                          onSeeAllTap: () => AppNavigator.goToSearchEvents(
+                            context,
+                            nearbyLondon: true,
+                          ),
                         ),
                         if (state.nearbyEvents.isEmpty)
                           const _HomeEmptyView()

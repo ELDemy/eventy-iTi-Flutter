@@ -193,8 +193,6 @@ class EventDetailsScreen extends StatelessWidget {
               children: [
                 TextSpan(text: event.category.label),
                 if (event.about != null) TextSpan(text: '\n${event.about}'),
-                TextSpan(
-                    text: AppStrings.readMore, style: AppTextStyles.readMore),
               ],
             ),
           ),

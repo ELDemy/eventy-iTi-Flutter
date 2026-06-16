@@ -7,7 +7,6 @@ import 'package:events_hub/presentation/favorites/cubit/favorites_cubit.dart';
 import 'package:events_hub/presentation/favorites/cubit/favorites_state.dart';
 import 'package:events_hub/presentation/profile/cubit/profile_cubit.dart';
 import 'package:events_hub/presentation/profile/cubit/profile_state.dart';
-import 'package:events_hub/presentation/profile/widgets/review_tile.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
@@ -220,8 +219,6 @@ class ProfileScreen extends StatelessWidget {
                 'Tell people about yourself and the events you love.',
             style: AppTextStyles.aboutBody,
           ),
-          const SizedBox(height: 6),
-          const Text('Read More', style: AppTextStyles.readMore),
         ],
       ),
     );
@@ -259,36 +256,11 @@ class ProfileScreen extends StatelessWidget {
   }
 
   Widget _buildReviewsTab() {
-    return ListView(
-      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-      children: const [
-        ReviewTile(
-          avatar: 'assets/images/avatar_1.png',
-          name: 'Rocks Velkeinjen',
-          date: '10 Feb',
-          rating: 4,
-          review:
-              "Cinemas is the ultimate experience to see new movies in Gold Class or Vmax. Find a cinema near you.",
-        ),
-        SizedBox(height: 12),
-        ReviewTile(
-          avatar: 'assets/images/avatar_2.png',
-          name: 'Angelina Zolly',
-          date: '10 Feb',
-          rating: 4,
-          review:
-              "Cinemas is the ultimate experience to see new movies in Gold Class or Vmax. Find a cinema near you.",
-        ),
-        SizedBox(height: 12),
-        ReviewTile(
-          avatar: 'assets/images/avatar_3.png',
-          name: 'Zenifero Bolex',
-          date: '10 Feb',
-          rating: 4,
-          review:
-              "Cinemas is the ultimate experience to see new movies in Gold Class or Vmax. Find a cinema near you.",
-        ),
-      ],
+    return const Center(
+      child: Text(
+        'No reviews yet.',
+        style: AppTextStyles.infoSubtitle,
+      ),
     );
   }
 }

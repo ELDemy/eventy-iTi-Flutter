@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:events_hub/core/di/events_dependencies.dart';
 import 'package:events_hub/domain/models/event.dart';
+import 'package:events_hub/domain/usecases/get_nearby_events.dart';
 import 'package:events_hub/domain/usecases/search_events.dart';
 import 'package:events_hub/presentation/events/events_list/cubit/events_filter_state.dart';
 import 'package:events_hub/presentation/events/events_list/search_events/cubit/search_events_state.dart';
@@ -10,16 +11,22 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 
 class SearchEventsCubit extends Cubit<SearchEventsState> {
   SearchEventsCubit({
+    this.nearbyLondon = false,
     SearchEvents? searchEvents,
+    GetNearbyEvents? getNearbyEvents,
   })  : _searchEvents = searchEvents ?? EventsDependencies.searchEvents,
+        _getNearbyEvents = getNearbyEvents ?? EventsDependencies.getNearbyEvents,
         super(const SearchEventsState()) {
     search();
   }
 
   static const String _defaultCity = 'London';
+  static const String _londonLatLong = '51.5074,-0.1278';
   static const int _pageSize = 20;
 
+  final bool nearbyLondon;
   final SearchEvents _searchEvents;
+  final GetNearbyEvents _getNearbyEvents;
   Timer? _debounce;
 
   void setSearchQuery(String query) {
@@ -65,6 +72,29 @@ class SearchEventsCubit extends Cubit<SearchEventsState> {
 
   Future<void> search() async {
     emit(state.copyWith(isLoading: true, clearError: true));
+
+    if (nearbyLondon) {
+      final result = await _getNearbyEvents(
+        const GetNearbyEventsParams(latLong: _londonLatLong, size: _pageSize),
+      );
+      result.fold(
+        (failure) => emit(
+          state.copyWith(
+            isLoading: false,
+            errorMessage: failure.message,
+          ),
+        ),
+        (page) => emit(
+          state.copyWith(
+            events: _applyClientFilters(page.events),
+            isLoading: false,
+            clearError: true,
+          ),
+        ),
+      );
+      return;
+    }
+
     final range = _dateRange(state.dateFilter);
     final result = await _searchEvents(
       SearchEventsParams(
@@ -86,7 +116,7 @@ class SearchEventsCubit extends Cubit<SearchEventsState> {
       ),
       (page) => emit(
         state.copyWith(
-          events: _filterByPrice(page.events),
+          events: _applyClientFilters(page.events),
           isLoading: false,
           clearError: true,
         ),
@@ -100,12 +130,19 @@ class SearchEventsCubit extends Cubit<SearchEventsState> {
     return super.close();
   }
 
-  List<Event> _filterByPrice(List<Event> events) {
+  List<Event> _applyClientFilters(List<Event> events) {
+    final query = state.query.toLowerCase().trim();
     return events.where((event) {
       final price = event.price;
-      return price == null ||
+      final matchesPrice = price == null ||
           (price >= state.priceRange.start.toInt() &&
               price <= state.priceRange.end.toInt());
+      final matchesCategory =
+          state.categories.isEmpty || state.categories.contains(event.category.name);
+      final matchesQuery = query.isEmpty ||
+          event.title.toLowerCase().contains(query) ||
+          event.location.toLowerCase().contains(query);
+      return matchesPrice && matchesCategory && matchesQuery;
     }).toList();
   }
 

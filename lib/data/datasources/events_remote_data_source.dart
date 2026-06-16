@@ -160,7 +160,6 @@ class EventsRemoteDataSourceImpl implements EventsRemoteDataSource {
         ApiConstants.events,
         queryParameters: queryParameters,
       );
-      print(response);
       final data = response.data;
       if (data == null) {
         throw const ServerException(message: 'Events response was empty.');

@@ -22,124 +22,191 @@ class EventsFilterSheet extends StatelessWidget {
   final VoidCallback onClear;
   final VoidCallback onApply;
 
+  int get _activeFilterCount {
+    var count = 0;
+    if (state.categories.isNotEmpty) count++;
+    if (state.dateFilter != DateFilter.any) count++;
+    if (state.priceRange.start > 0 || state.priceRange.end < 200) count++;
+    return count;
+  }
+
   @override
   Widget build(BuildContext context) {
-    return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 20),
-      decoration: const BoxDecoration(
-        color: AppColors.surface,
-        borderRadius: BorderRadius.vertical(top: Radius.circular(26)),
-      ),
-      child: Column(
-        mainAxisSize: MainAxisSize.min,
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Align(
-            alignment: Alignment.center,
-            child: Container(
-              width: 36,
-              height: 4,
-              decoration: BoxDecoration(
-                color: AppColors.divider,
-                borderRadius: BorderRadius.circular(2),
-              ),
-            ),
+    return DraggableScrollableSheet(
+      expand: false,
+      initialChildSize: 0.72,
+      minChildSize: 0.45,
+      maxChildSize: 0.92,
+      builder: (context, scrollController) {
+        return Container(
+          decoration: const BoxDecoration(
+            color: AppColors.surface,
+            borderRadius: BorderRadius.vertical(top: Radius.circular(28)),
           ),
-          const SizedBox(height: 20),
-          Text('Filter', style: AppTextStyles.homeSectionTitle),
-          const SizedBox(height: 20),
-          Text('Category', style: AppTextStyles.infoTitle),
-          const SizedBox(height: 12),
-          Wrap(
-            spacing: 12,
-            runSpacing: 12,
-            children: EventCategory.homeFilters.map((category) {
-              final selected = state.categories.contains(category.name);
-              return ChoiceChip(
-                label: Text(category.label),
-                selected: selected,
-                selectedColor: AppColors.primary.withValues(alpha: 0.12),
-                backgroundColor: AppColors.surface,
-                labelStyle: selected
-                    ? AppTextStyles.tabActive
-                    : AppTextStyles.tabInactive,
-                onSelected: (_) => onCategoryTap(category.name),
-              );
-            }).toList(),
-          ),
-          const SizedBox(height: 24),
-          Text('Time & Date', style: AppTextStyles.infoTitle),
-          const SizedBox(height: 12),
-          Wrap(
-            spacing: 12,
-            runSpacing: 12,
-            children: DateFilter.values.map((filter) {
-              return ChoiceChip(
-                label: Text(_dateFilterLabel(filter)),
-                selected: state.dateFilter == filter,
-                selectedColor: AppColors.primary.withValues(alpha: 0.12),
-                backgroundColor: AppColors.surface,
-                labelStyle: state.dateFilter == filter
-                    ? AppTextStyles.tabActive
-                    : AppTextStyles.tabInactive,
-                onSelected: (_) => onDateFilterTap(filter),
-              );
-            }).toList(),
-          ),
-          const SizedBox(height: 24),
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          child: Column(
             children: [
-              Text('Price range', style: AppTextStyles.infoTitle),
-              Text('\$${state.priceRange.start.toInt()} - \$${state.priceRange.end.toInt()}',
-                  style: AppTextStyles.infoSubtitle),
-            ],
-          ),
-          const SizedBox(height: 12),
-          RangeSlider(
-            values: state.priceRange,
-            min: 0,
-            max: 200,
-            divisions: 20,
-            activeColor: AppColors.primary,
-            inactiveColor: AppColors.tabBackground,
-            onChanged: onPriceChanged,
-          ),
-          const SizedBox(height: 24),
-          Row(
-            children: [
-              Expanded(
-                child: OutlinedButton(
-                  onPressed: onClear,
-                  style: OutlinedButton.styleFrom(
-                    foregroundColor: AppColors.primary,
-                    side: const BorderSide(color: AppColors.primary),
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(16),
-                    ),
-                    padding: const EdgeInsets.symmetric(vertical: 16),
-                  ),
-                  child: const Text('Clear'),
+              const SizedBox(height: 10),
+              Container(
+                width: 38,
+                height: 4,
+                decoration: BoxDecoration(
+                  color: AppColors.divider,
+                  borderRadius: BorderRadius.circular(2),
                 ),
               ),
-              const SizedBox(width: 12),
-              Expanded(
-                child: ElevatedButton(
-                  onPressed: onApply,
-                  style: ElevatedButton.styleFrom(
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(16),
+              Padding(
+                padding: const EdgeInsets.fromLTRB(24, 18, 16, 10),
+                child: Row(
+                  children: [
+                    Expanded(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text('Filters', style: AppTextStyles.homeSectionTitle),
+                          const SizedBox(height: 4),
+                          Text(
+                            _activeFilterCount == 0
+                                ? 'Refine event results'
+                                : '$_activeFilterCount active filter${_activeFilterCount == 1 ? '' : 's'}',
+                            style: AppTextStyles.infoSubtitle,
+                          ),
+                        ],
+                      ),
                     ),
-                    padding: const EdgeInsets.symmetric(vertical: 16),
+                    IconButton(
+                      onPressed: () => Navigator.of(context).pop(),
+                      icon: const Icon(Icons.close),
+                    ),
+                  ],
+                ),
+              ),
+              Expanded(
+                child: ListView(
+                  controller: scrollController,
+                  padding: const EdgeInsets.fromLTRB(24, 8, 24, 20),
+                  children: [
+                    _FilterSection(
+                      title: 'Category',
+                      child: Wrap(
+                        spacing: 10,
+                        runSpacing: 10,
+                        children: EventCategory.homeFilters.map((category) {
+                          final selected =
+                              state.categories.contains(category.name);
+                          return _FilterChipButton(
+                            label: category.label,
+                            selected: selected,
+                            onTap: () => onCategoryTap(category.name),
+                          );
+                        }).toList(),
+                      ),
+                    ),
+                    const SizedBox(height: 22),
+                    _FilterSection(
+                      title: 'Time & Date',
+                      child: Wrap(
+                        spacing: 10,
+                        runSpacing: 10,
+                        children: DateFilter.values.map((filter) {
+                          return _FilterChipButton(
+                            label: _dateFilterLabel(filter),
+                            selected: state.dateFilter == filter,
+                            onTap: () => onDateFilterTap(filter),
+                          );
+                        }).toList(),
+                      ),
+                    ),
+                    const SizedBox(height: 22),
+                    _FilterSection(
+                      title: 'Price Range',
+                      trailing: Text(
+                        '\$${state.priceRange.start.toInt()} - \$${state.priceRange.end.toInt()}',
+                        style: AppTextStyles.infoSubtitle.copyWith(
+                          color: AppColors.primary,
+                          fontWeight: FontWeight.w600,
+                        ),
+                      ),
+                      child: Column(
+                        children: [
+                          RangeSlider(
+                            values: state.priceRange,
+                            min: 0,
+                            max: 200,
+                            divisions: 20,
+                            activeColor: AppColors.primary,
+                            inactiveColor: AppColors.tabBackground,
+                            labels: RangeLabels(
+                              '\$${state.priceRange.start.toInt()}',
+                              '\$${state.priceRange.end.toInt()}',
+                            ),
+                            onChanged: onPriceChanged,
+                          ),
+                          const Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: [
+                              Text('\$0', style: AppTextStyles.infoSubtitle),
+                              Text('\$200+', style: AppTextStyles.infoSubtitle),
+                            ],
+                          ),
+                        ],
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+              SafeArea(
+                top: false,
+                child: Container(
+                  padding: const EdgeInsets.fromLTRB(24, 14, 24, 18),
+                  decoration: BoxDecoration(
+                    color: AppColors.surface,
+                    boxShadow: [
+                      BoxShadow(
+                        color: AppColors.textPrimary.withValues(alpha: 0.08),
+                        blurRadius: 18,
+                        offset: const Offset(0, -8),
+                      ),
+                    ],
                   ),
-                  child: const Text('Apply'),
+                  child: Row(
+                    children: [
+                      Expanded(
+                        child: OutlinedButton(
+                          onPressed: onClear,
+                          style: OutlinedButton.styleFrom(
+                            foregroundColor: AppColors.primary,
+                            side: const BorderSide(color: AppColors.primary),
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(14),
+                            ),
+                            padding: const EdgeInsets.symmetric(vertical: 15),
+                          ),
+                          child: const Text('Clear All'),
+                        ),
+                      ),
+                      const SizedBox(width: 12),
+                      Expanded(
+                        child: ElevatedButton(
+                          onPressed: onApply,
+                          style: ElevatedButton.styleFrom(
+                            backgroundColor: AppColors.primary,
+                            foregroundColor: AppColors.textOnPrimary,
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(14),
+                            ),
+                            padding: const EdgeInsets.symmetric(vertical: 15),
+                          ),
+                          child: const Text('Apply Filters'),
+                        ),
+                      ),
+                    ],
+                  ),
                 ),
               ),
             ],
           ),
-          const SizedBox(height: 24),
-        ],
-      ),
+        );
+      },
     );
   }
 
@@ -150,5 +217,80 @@ class EventsFilterSheet extends StatelessWidget {
       DateFilter.tomorrow => 'Tomorrow',
       DateFilter.thisWeek => 'This Week',
     };
+  }
+}
+
+class _FilterSection extends StatelessWidget {
+  const _FilterSection({
+    required this.title,
+    required this.child,
+    this.trailing,
+  });
+
+  final String title;
+  final Widget child;
+  final Widget? trailing;
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Row(
+          children: [
+            Expanded(child: Text(title, style: AppTextStyles.infoTitle)),
+            if (trailing != null) trailing!,
+          ],
+        ),
+        const SizedBox(height: 12),
+        child,
+      ],
+    );
+  }
+}
+
+class _FilterChipButton extends StatelessWidget {
+  const _FilterChipButton({
+    required this.label,
+    required this.selected,
+    required this.onTap,
+  });
+
+  final String label;
+  final bool selected;
+  final VoidCallback onTap;
+
+  @override
+  Widget build(BuildContext context) {
+    return InkWell(
+      onTap: onTap,
+      borderRadius: BorderRadius.circular(18),
+      child: AnimatedContainer(
+        duration: const Duration(milliseconds: 180),
+        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 11),
+        decoration: BoxDecoration(
+          color: selected
+              ? AppColors.primary.withValues(alpha: 0.12)
+              : AppColors.tabBackground,
+          borderRadius: BorderRadius.circular(18),
+          border: Border.all(
+            color: selected ? AppColors.primary : Colors.transparent,
+          ),
+        ),
+        child: Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            if (selected) ...[
+              const Icon(Icons.check, size: 16, color: AppColors.primary),
+              const SizedBox(width: 6),
+            ],
+            Text(
+              label,
+              style: selected ? AppTextStyles.tabActive : AppTextStyles.tabInactive,
+            ),
+          ],
+        ),
+      ),
+    );
   }
 }

@@ -1,4 +1,5 @@
 import 'package:events_hub/core/di/app_dependencies.dart';
+import 'package:events_hub/presentation/onboarding/onboarding_screen.dart';
 import 'package:events_hub/presentation/auth/sign_in/sign_in_screen.dart';
 import 'package:events_hub/presentation/favorites/cubit/favorites_cubit.dart';
 import 'package:events_hub/presentation/navbar/MyNavBar.dart';
@@ -12,21 +13,52 @@ class AuthGate extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return StreamBuilder<User?>(
-      initialData: AppDependencies.authRepository.currentFirebaseUser,
-      stream: AppDependencies.authRepository.authStateChanges(),
-      builder: (context, snapshot) {
-        final user = snapshot.data;
-        if (user == null) return const SignInScreen();
+    return FutureBuilder<_AuthGateStartup>(
+      future: _startup(),
+      builder: (context, startupSnapshot) {
+        if (!startupSnapshot.hasData) {
+          return const Scaffold(
+            body: Center(child: CircularProgressIndicator()),
+          );
+        }
 
-        return MultiBlocProvider(
-          providers: [
-            BlocProvider(create: (_) => ProfileCubit()),
-            BlocProvider(create: (_) => FavoritesCubit()),
-          ],
-          child: const MyNavBar(),
+        if (!startupSnapshot.data!.hasSeenOnboarding) {
+          return const OnboardingScreen();
+        }
+
+        return StreamBuilder<User?>(
+          initialData: AppDependencies.authRepository.currentFirebaseUser,
+          stream: AppDependencies.authRepository.authStateChanges(),
+          builder: (context, snapshot) {
+            final user = snapshot.data;
+            if (user == null) return const SignInScreen();
+
+            return MultiBlocProvider(
+              providers: [
+                BlocProvider(create: (_) => ProfileCubit()),
+                BlocProvider(create: (_) => FavoritesCubit()),
+              ],
+              child: const MyNavBar(),
+            );
+          },
         );
       },
     );
   }
+
+  Future<_AuthGateStartup> _startup() async {
+    final repository = AppDependencies.authRepository;
+    final hasSeenOnboarding = await repository.hasSeenOnboarding();
+    final sessionOnlyLogin = await repository.getSessionOnlyLogin();
+    if (repository.currentFirebaseUser != null && sessionOnlyLogin) {
+      await repository.signOut();
+    }
+    return _AuthGateStartup(hasSeenOnboarding: hasSeenOnboarding);
+  }
+}
+
+class _AuthGateStartup {
+  const _AuthGateStartup({required this.hasSeenOnboarding});
+
+  final bool hasSeenOnboarding;
 }

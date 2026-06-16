@@ -1,5 +1,6 @@
-import 'package:events_hub/core/routes/app_routes.dart';
+import 'package:events_hub/core/di/app_dependencies.dart';
 import 'package:events_hub/core/theme/app_colors.dart';
+import 'package:events_hub/presentation/auth/auth_gate.dart';
 import 'package:events_hub/presentation/onboarding/components/on_boarding_rounded_container.dart';
 import 'package:flutter/material.dart';
 
@@ -17,6 +18,15 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
   int _page = 0;
   static const _pages = OnboardingPageData.pages;
 
+  Future<void> _finishOnboarding() async {
+    await AppDependencies.authRepository.markOnboardingSeen();
+    if (!mounted) return;
+    Navigator.pushReplacement(
+      context,
+      MaterialPageRoute(builder: (_) => const AuthGate()),
+    );
+  }
+
   void _onNext() {
     if (_page < _pages.length - 1) {
       _controller.nextPage(
@@ -24,7 +34,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
         curve: Curves.easeInOut,
       );
     } else {
-      AppNavigator.goToSignIn(context);
+      _finishOnboarding();
     }
   }
 
@@ -38,7 +48,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
   }
 
   void _onSkip() {
-    AppNavigator.goToSignIn(context);
+    _finishOnboarding();
   }
 
   @override

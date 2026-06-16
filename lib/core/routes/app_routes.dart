@@ -59,11 +59,14 @@ abstract final class AppNavigator {
     );
   }
 
-  static Future<void> goToSearchEvents(BuildContext context) {
+  static Future<void> goToSearchEvents(
+    BuildContext context, {
+    bool nearbyLondon = false,
+  }) {
     return Navigator.push(
       context,
       MaterialPageRoute(
-        builder: (_) => const SearchEventsScreen(),
+        builder: (_) => SearchEventsScreen(nearbyLondon: nearbyLondon),
       ),
     );
   }
